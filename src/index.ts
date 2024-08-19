@@ -3,8 +3,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
-// import connectDB from './config/db.js';
-// import routes from './routes/index.js';
+import connectDB from './config/connectDataBase.js';
+import routes from './routes/index.js';
 
 dotenv.config();
 
@@ -16,14 +16,15 @@ app.use(cors({
     origin: process.env.FRONTEND_BASE_URL
 }));
 
-// connectDB();
+connectDB();
+
 app.use(morgan(process.env.ENV));
 
 app.get('/health', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-// app.use(routes);
+app.use('/api', routes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     if (!err.statusCode) {
