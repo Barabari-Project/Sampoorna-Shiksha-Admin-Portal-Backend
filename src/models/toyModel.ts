@@ -23,6 +23,9 @@ const toySchema: Schema<IToyModel> = new Schema({
     category: {
         type: String,
     },
+    codeName:{
+        type: String,
+    },
     level: {
         type: String,
         enum: Level,
