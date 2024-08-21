@@ -66,7 +66,7 @@ export interface SchoolOrderDataFromExcelSheet {
     referredBy: string;
 }
 
-export interface ISchoolOrder extends Document{
+export interface ISchoolOrder extends Document {
     timestamp?: string;
     school?: Types.ObjectId;
     numberOfStudentsBalwadiClass1?: number;
@@ -86,6 +86,12 @@ export interface ISchoolOrder extends Document{
     updatedAt: Date;
 }
 
+export interface IStock extends Document {
+    toy: Types.ObjectId;
+    quantity:number;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export enum Level {
     PRIMARY = 'PRIMARY',
