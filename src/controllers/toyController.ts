@@ -30,6 +30,7 @@ export const updateToy = expressAsyncHandler(async (req: Request, res: Response)
         throw createHttpError(400, 'Invalid Toy ID.');
     }
     delete toy.id;
+    delete toy._id;
     const updatedToy = await ToyModel.findByIdAndUpdate(toyId, toy, {
         new: true, // Return the updated document
         runValidators: true, // Run schema validators on the updated fields

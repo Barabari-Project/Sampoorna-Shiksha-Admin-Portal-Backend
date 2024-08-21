@@ -1,4 +1,5 @@
-import { Document } from 'mongoose';
+import moment from 'moment';
+import mongoose, { Document, Types } from 'mongoose';
 
 export interface IToyModel extends Document {
     srNo: number;
@@ -15,37 +16,77 @@ export interface IToyModel extends Document {
     updatedAt: Date;
 }
 
-export interface ISchoolInformation extends Document {
+export interface ISchool extends Document {
+    code: string;
     timestamp?: string;
-    nameOfSchool?: string;
-    boardAffiliatedTo?: string;
-    mediumOfInstruction?: string;
-    typeOfInstitution?: string;
-    villageName?: string;
+    nameOfSchoolInstitution?: string;
+    boardAffiliatedAndMediumOfInstruction?: string;
+    typeOfInstitutionSchool?: string;
+    villageNameIfAny?: string;
     district?: string;
     state?: string;
-    fullAddress?: string;
-    nameOfPrincipal?: string;
-    management?: string;
-    principalContactNumber?: string;
-    coordinatorName?: string;
-    coordinatorContactDetails?: string;
-    hasCupboardForToys?: boolean;
-    hasRoomForLibrary?: boolean;
-    libraryRoomPictures?: string;
+    fullAddressWithPinCode?: string;
+    nameOfPrincipalAndManagement?: string;
+    contactNumberOfPrincipalManagement?: string;
+    nameOfCoordinatorForLibrary?: string;
+    contactDetailsOfCoordinatorTeacher?: string;
+    isThereCupboardForSafekeeping?: boolean;
+    isThereRoomForLibrary?: boolean;
+    picturesOfLibraryRoomAndCupboard?: string;
     cupboardPictures?: string;
-    numberOfStudentsBalwadiToClass1?: number;
-    numberOfStudentsClass2ToClass4?: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+export interface SchoolDataFromExcelSheet {
+    code: string;
+    haveYouFilledTheFormInPast: boolean;
+    timestamp: string;
+    nameOfSchoolInstitution: string;
+    boardAffiliatedAndMediumOfInstruction: string;
+    typeOfInstitutionSchool: string;
+    villageNameIfAny: string;
+    district: string;
+    state: string;
+    fullAddressWithPinCode: string;
+    nameOfPrincipalAndManagement: string;
+    contactNumberOfPrincipalManagement: string;
+    nameOfCoordinatorForLibrary: string;
+    contactDetailsOfCoordinatorTeacher: string;
+    isThereCupboardForSafekeeping: boolean;
+    isThereRoomForLibrary: boolean;
+    picturesOfLibraryRoomAndCupboard: string;
+};
+
+export interface OrderDataFromExcelSheet {
+    code: string;
+    timestamp: string;
+    numberOfStudentsBalwadiClass1: Number;
+    numberOfStudentsClass2To4: Number;
+    numberOfStudentsClass5AndAbove: Number;
+    referredBy: string;
+}
+
+export interface IOrder extends Document{
+    timestamp?: string;
+    school?: Types.ObjectId;
+    numberOfStudentsBalwadiClass1?: number;
+    numberOfStudentsClass2To4?: number;
     numberOfStudentsClass5AndAbove?: number;
     referredBy?: string;
     totalNumberOfToys?: number;
-    listOfToysSentLink?: string[];
+    listOfToysSentLink?: {
+        toy: Types.ObjectId;
+        quantity?: number;
+    }[];
     dateOfDespatch?: string;
     modeOfDespatch?: string;
     trackingDetails?: string;
     dateOfDelivery?: string;
     photosVideosLink?: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
+
 
 export enum Level {
     PRIMARY = 'PRIMARY',

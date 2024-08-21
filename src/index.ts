@@ -8,6 +8,8 @@ import routes from './routes/index.js';
 
 dotenv.config();
 
+console.log(process.env.RESPONSES_SHEET_ID)
+
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '3000');
 

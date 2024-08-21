@@ -1,32 +1,32 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { addToy, deleteToyById, getToyById, getToys, updateToy } from '../controllers/toyController.js';
+import { addSchoolData, deleteSchoolById, getSchoolById, getSchools, updateSchoolData } from '../controllers/schoolController.js';
 
 const router = express.Router();
 
 router.post('/',
     authMiddleware,
-    addToy
-);
-
-router.get('/',
-    authMiddleware,
-    getToys
-);
-
-router.get('/:id',
-    authMiddleware,
-    getToyById
+    addSchoolData
 );
 
 router.put('/',
     authMiddleware,
-    updateToy
+    updateSchoolData
+);
+
+router.get('/',
+    authMiddleware,
+    getSchools
+);
+
+router.get('/:id',
+    authMiddleware,
+    getSchoolById
 );
 
 router.delete('/:id',
     authMiddleware,
-    deleteToyById
+    deleteSchoolById
 );
 
 export default router;
