@@ -57,7 +57,7 @@ export interface SchoolDataFromExcelSheet {
     picturesOfLibraryRoomAndCupboard: string;
 };
 
-export interface OrderDataFromExcelSheet {
+export interface SchoolOrderDataFromExcelSheet {
     code: string;
     timestamp: string;
     numberOfStudentsBalwadiClass1: Number;
@@ -66,14 +66,13 @@ export interface OrderDataFromExcelSheet {
     referredBy: string;
 }
 
-export interface IOrder extends Document{
+export interface ISchoolOrder extends Document{
     timestamp?: string;
     school?: Types.ObjectId;
     numberOfStudentsBalwadiClass1?: number;
     numberOfStudentsClass2To4?: number;
     numberOfStudentsClass5AndAbove?: number;
     referredBy?: string;
-    totalNumberOfToys?: number;
     listOfToysSentLink?: {
         toy: Types.ObjectId;
         quantity?: number;

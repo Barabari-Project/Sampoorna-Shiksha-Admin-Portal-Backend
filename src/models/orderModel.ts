@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
-import { IOrder } from '../utils/types.js';
+import { ISchoolOrder } from '../utils/types.js';
 import moment from 'moment-timezone';
 
-const orderSchema: Schema<IOrder> = new Schema({
+const schoolOrderSchema: Schema<ISchoolOrder> = new Schema({
     timestamp: {
         type: String,
     },
@@ -21,9 +21,6 @@ const orderSchema: Schema<IOrder> = new Schema({
     },
     referredBy: {
         type: String,
-    },
-    totalNumberOfToys: {
-        type: Number,
     },
     listOfToysSentLink: [
         {
@@ -66,15 +63,15 @@ const orderSchema: Schema<IOrder> = new Schema({
 });
 
 // Define a virtual for createdAtIST
-orderSchema.virtual('createdAtIST').get(function () {
+schoolOrderSchema.virtual('createdAtIST').get(function () {
     return moment(this.createdAt).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 });
 
 // Define a virtual for updatedAtIST
-orderSchema.virtual('updatedAtIST').get(function () {
+schoolOrderSchema.virtual('updatedAtIST').get(function () {
     return moment(this.updatedAt).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 });
 
-const OrderModel = mongoose.model<IOrder>('Order', orderSchema);
+const OrderModel = mongoose.model<ISchoolOrder>('SchoolOrder', schoolOrderSchema);
 
 export default OrderModel;
