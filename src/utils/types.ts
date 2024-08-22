@@ -9,6 +9,7 @@ export interface IToyModel extends Document {
     price: number;
     category: string;
     codeName: string;
+    cataloguePgNo: number;
     level: Level;
     learn: string[];
     link: string;
@@ -64,7 +65,7 @@ export interface SchoolOrderDataFromExcelSheet {
     numberOfStudentsClass2To4: Number;
     numberOfStudentsClass5AndAbove: Number;
     referredBy: string;
-}
+};
 
 export interface ISchoolOrder extends Document {
     timestamp?: string;
@@ -77,20 +78,44 @@ export interface ISchoolOrder extends Document {
         toy: Types.ObjectId;
         quantity?: number;
     }[];
-    dateOfDespatch?: string;
-    modeOfDespatch?: string;
+    dateOfDispatch?: string;
+    modeOfDispatch?: string;
     trackingDetails?: string;
     dateOfDelivery?: string;
     photosVideosLink?: string;
     createdAt: Date;
     updatedAt: Date;
-}
+};
 
 export interface IStock extends Document {
     toy: Types.ObjectId;
-    quantity:number;
+    quantity: number;
     createdAt: Date;
     updatedAt: Date;
+};
+
+export interface IVendorOrder {
+    listOfToysSentLink?: {
+        toy: Types.ObjectId;
+        quantity?: number;
+    }[];
+    brand?:string;
+    subBrand?: string;
+    status?: {
+        timestamps: string;
+        personName: string;
+        contactNumber: string;
+        status: VendorOrderStatus;
+    }[];
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export interface VendorCartItem {
+    toyId: Types.ObjectId;
+    quantity: number;
+    brand: string;
+    subBrand: string;
 }
 
 export enum Level {
@@ -99,4 +124,12 @@ export enum Level {
     SENIOR_SECONDARY = 'SENIOR_SECONDARY',
     MIX = 'MIX',
     ALL = 'ALL'
-}
+};
+
+export enum VendorOrderStatus {
+    PENDING = 'PENDING',
+    PROCESSING = 'PROCESSING',
+    DISPATCHED = 'DISPATCHED',
+    DELIVERED = 'DELIVERED',
+    CANCELLED = 'CANCELLED'
+};

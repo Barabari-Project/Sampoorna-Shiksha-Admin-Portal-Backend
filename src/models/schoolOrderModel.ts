@@ -33,10 +33,10 @@ const schoolOrderSchema: Schema<ISchoolOrder> = new Schema({
             }
         }
     ],
-    dateOfDespatch: {
+    dateOfDispatch: {
         type: String,
     },
-    modeOfDespatch: {
+    modeOfDispatch: {
         type: String,
     },
     trackingDetails: {

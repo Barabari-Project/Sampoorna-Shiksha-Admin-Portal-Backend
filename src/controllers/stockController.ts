@@ -55,3 +55,19 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
         throw createHttpError(400, 'Failed to remove stock quantities', error.message);
     }
 });
+
+export const getStock = expressAsyncHandler(async (req: Request, res: Response) => {
+    const stock = await StockModel.find();
+    res.json(stock);
+});
+
+export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const deletedStockItem = await StockModel.findOneAndDelete({ toy: id });
+
+    if (!deletedStockItem) {
+        throw createHttpError(404, 'Toy not found in stock');
+    }
+
+    res.status(200).json({ message: 'Toy deleted successfully from stock.' });
+});

@@ -23,8 +23,11 @@ const toySchema: Schema<IToyModel> = new Schema({
     category: {
         type: String,
     },
-    codeName:{
+    codeName: {
         type: String,
+    },
+    cataloguePgNo: {
+        type: Number,
     },
     level: {
         type: String,
