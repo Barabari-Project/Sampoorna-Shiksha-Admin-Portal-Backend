@@ -12,36 +12,36 @@ dotenv.config();
 const RESPONSES_SHEET_ID: string = process.env.RESPONSES_SHEET_ID;
 
 const serviceAccountAuth = new JWT({
-    email: 'sampoorna-shiksha@some-new-420617.iam.gserviceaccount.com',
+    email: process.env.SHEET_EMAIL_ID,
     key: process.env.GOOGLE_PRIVATE_KEY,
     scopes: [
         'https://www.googleapis.com/auth/spreadsheets',
     ],
 });
 
-const readColumns = (row: any) => {
+const readColumns = (row: any): SchoolDataFromExcelSheet => {
+    const getValue = (key: string): string | undefined => {
+        const value = row.get(key)?.trim();
+        return value?.length === 0 ? undefined : value;
+    };
+
     const data: SchoolDataFromExcelSheet = {
-        code: row.get('Code'),
-        haveYouFilledTheFormInPast: row.get('Have you filled the form in past?').toLowerCase() === 'yes' ? true : false,
-        timestamp: row.get('Timestamp'),
-        nameOfSchoolInstitution: row.get('Name of the school/Institution'),
-        boardAffiliatedAndMediumOfInstruction: row.get('Board affiliated to and Medium of instruction'),
-        typeOfInstitutionSchool: row.get('Type of institution/school'),
-        villageNameIfAny: row.get('Village name  if any'),
-        district: row.get('District'),
-        state: row.get('State'),
-        fullAddressWithPinCode: row.get('Full address with pin code'),
-        nameOfPrincipalAndManagement: row.get('Name of the Principal and Management'),
-        contactNumberOfPrincipalManagement: row.get('Contact number of the Principal/Management'),
-        nameOfCoordinatorForLibrary: row.get('Name of the teacher/coordinator for training and managing the library'),
-        contactDetailsOfCoordinatorTeacher: row.get('Contact details of the coordinator/teacher'),
-        isThereCupboardForSafekeeping: row.get('Is there a cupboard/place for safekeeping of the toys').toLowerCase() === 'yes' ? true : false,
-        isThereRoomForLibrary: row.get('Is there a room /place to set up the library').toLowerCase() === 'yes' ? true : false,
-        picturesOfLibraryRoomAndCupboard: row.get('Pictures of the library room and cupboard'), // This can be an array if multiple pictures are allowed
-        // numberOfStudentsBalwadiClass1: row.get('Number of Students - Balwadi - class 1'),
-        // numberOfStudentsClass2To4: row.get('Number of Students - class 2 - class 4'),
-        // numberOfStudentsClass5AndAbove: row.get('Number of Students - class 5 and above'),
-        // referredBy: row.get('Referred by'),
+        code: getValue('Code'),
+        timestamp: getValue('Timestamp'),
+        nameOfSchoolInstitution: getValue('Name of the school/Institution'),
+        boardAffiliatedAndMediumOfInstruction: getValue('Board affiliated to and Medium of instruction'),
+        typeOfInstitutionSchool: getValue('Type of institution/school'),
+        villageNameIfAny: getValue('Village name  if any'),
+        district: getValue('District'),
+        state: getValue('State'),
+        fullAddressWithPinCode: getValue('Full address with pin code'),
+        nameOfPrincipalAndManagement: getValue('Name of the Principal and Management'),
+        contactNumberOfPrincipalManagement: getValue('Contact number of the Principal/Management'),
+        nameOfCoordinatorForLibrary: getValue('Name of the teacher/coordinator for training and managing the library'),
+        contactDetailsOfCoordinatorTeacher: getValue('Contact details of the coordinator/teacher'),
+        isThereCupboardForSafekeeping: getValue('Is there a cupboard/place for safekeeping of the toys'),
+        isThereRoomForLibrary: getValue('Is there a room /place to set up the library'),
+        picturesOfLibraryRoomAndCupboard: getValue('Pictures of the library room and cupboard'),
     };
     return data;
 };

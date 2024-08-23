@@ -34,6 +34,6 @@ stockSchema.virtual('updatedAtIST').get(function () {
     return moment(this.updatedAt).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 });
 
-const StockModel = mongoose.model<IStock>('SchoolOrder', stockSchema);
+const StockModel = mongoose.model<IStock>('Stock', stockSchema);
 
 export default StockModel;

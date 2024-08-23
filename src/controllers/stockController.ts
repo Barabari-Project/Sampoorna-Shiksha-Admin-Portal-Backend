@@ -2,9 +2,18 @@ import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import StockModel from '../models/stockModel.js';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 
 export const addNewStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy, quantity } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(toy)) {
+        throw createHttpError(400, 'Invalid Toy ID.');
+    }
+    const parsedQuantity = Number(quantity);
+    if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+        throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+    }
 
     // Find the existing stock entry for the given toy
     const updatedStock = await StockModel.findOneAndUpdate(
@@ -18,11 +27,22 @@ export const addNewStock = expressAsyncHandler(async (req: Request, res: Respons
 });
 
 export const removeFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
+    const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
+
+    for (const item of toys) {
+        const { toy, quantity } = item;
+        if (!mongoose.Types.ObjectId.isValid(toy)) {
+            throw createHttpError(400, 'Invalid Toy ID.');
+        }
+        const parsedQuantity = Number(quantity);
+        if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+            throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+        }
+    }
     const session = await StockModel.startSession();
     session.startTransaction();
 
     try {
-        const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
 
         for (const item of toys) {
             const { toy, quantity } = item;
@@ -57,13 +77,16 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
 });
 
 export const getStock = expressAsyncHandler(async (req: Request, res: Response) => {
-    const stock = await StockModel.find();
+    const stock = await StockModel.find().populate('toy');
     res.json(stock);
 });
 
 export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const deletedStockItem = await StockModel.findOneAndDelete({ toy: id });
+    const { toy } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(toy)) {
+        throw createHttpError(400, 'Invalid Toy ID.');
+    }
+    const deletedStockItem = await StockModel.findOneAndDelete({ toy });
 
     if (!deletedStockItem) {
         throw createHttpError(404, 'Toy not found in stock');

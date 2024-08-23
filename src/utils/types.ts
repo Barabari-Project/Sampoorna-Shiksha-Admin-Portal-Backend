@@ -31,32 +31,31 @@ export interface ISchool extends Document {
     contactNumberOfPrincipalManagement?: string;
     nameOfCoordinatorForLibrary?: string;
     contactDetailsOfCoordinatorTeacher?: string;
-    isThereCupboardForSafekeeping?: boolean;
-    isThereRoomForLibrary?: boolean;
+    isThereCupboardForSafekeeping?: string;
+    isThereRoomForLibrary?: string;
     picturesOfLibraryRoomAndCupboard?: string;
     cupboardPictures?: string;
     createdAt: Date;
     updatedAt: Date;
 }
 export interface SchoolDataFromExcelSheet {
-    code: string;
-    haveYouFilledTheFormInPast: boolean;
-    timestamp: string;
-    nameOfSchoolInstitution: string;
-    boardAffiliatedAndMediumOfInstruction: string;
-    typeOfInstitutionSchool: string;
-    villageNameIfAny: string;
-    district: string;
-    state: string;
-    fullAddressWithPinCode: string;
-    nameOfPrincipalAndManagement: string;
-    contactNumberOfPrincipalManagement: string;
-    nameOfCoordinatorForLibrary: string;
-    contactDetailsOfCoordinatorTeacher: string;
-    isThereCupboardForSafekeeping: boolean;
-    isThereRoomForLibrary: boolean;
-    picturesOfLibraryRoomAndCupboard: string;
-};
+    code: string | undefined;
+    timestamp: string | undefined;
+    nameOfSchoolInstitution: string | undefined;
+    boardAffiliatedAndMediumOfInstruction: string | undefined;
+    typeOfInstitutionSchool: string | undefined;
+    villageNameIfAny: string | undefined;
+    district: string | undefined;
+    state: string | undefined;
+    fullAddressWithPinCode: string | undefined;
+    nameOfPrincipalAndManagement: string | undefined;
+    contactNumberOfPrincipalManagement: string | undefined;
+    nameOfCoordinatorForLibrary: string | undefined;
+    contactDetailsOfCoordinatorTeacher: string | undefined;
+    isThereCupboardForSafekeeping: string | undefined;
+    isThereRoomForLibrary: string | undefined;
+    picturesOfLibraryRoomAndCupboard: string | undefined;
+}
 
 export interface SchoolOrderDataFromExcelSheet {
     code: string;
@@ -99,7 +98,7 @@ export interface IVendorOrder {
         toy: Types.ObjectId;
         quantity?: number;
     }[];
-    brand?:string;
+    brand?: string;
     subBrand?: string;
     status?: {
         timestamps: string;

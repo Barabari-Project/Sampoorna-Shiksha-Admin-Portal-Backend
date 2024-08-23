@@ -5,55 +5,71 @@ import moment from 'moment-timezone';
 const schoolSchema: Schema<ISchool> = new Schema({
     code: {
         type: String,
-        unique: true
+        unique: true,
     },
     timestamp: {
         type: String,
+        default: 'Not Provided'
     },
     nameOfSchoolInstitution: {
         type: String,
+        default: 'Not Provided'
     },
     boardAffiliatedAndMediumOfInstruction: {
         type: String,
+        default: 'Not Provided'
     },
     typeOfInstitutionSchool: {
         type: String,
+        default: 'Not Provided'
     },
     villageNameIfAny: {
         type: String,
+        default: 'Not Provided'
     },
     district: {
         type: String,
+        default: 'Not Provided'
     },
     state: {
         type: String,
+        default: 'Not Provided'
     },
     fullAddressWithPinCode: {
         type: String,
+        default: 'Not Provided'
     },
     nameOfPrincipalAndManagement: {
         type: String,
+        default: 'Not Provided'
     },
     contactNumberOfPrincipalManagement: {
         type: String,
+        default: 'Not Provided'
     },
     nameOfCoordinatorForLibrary: {
         type: String,
+        default: 'Not Provided'
     },
     contactDetailsOfCoordinatorTeacher: {
         type: String,
+        default: 'Not Provided'
     },
     isThereCupboardForSafekeeping: {
-        type: Boolean,
+        type: String,
+        default: 'Not Provided'
     },
     isThereRoomForLibrary: {
-        type: Boolean,
+        type: String,
+        default: 'Not Provided'
     },
     picturesOfLibraryRoomAndCupboard: {
         type: String,
+        default: 'Not Provided'
     },
     cupboardPictures: {
         type: String,
+        default: 'Not Provided'
     },
     createdAt: {
         type: Date,
