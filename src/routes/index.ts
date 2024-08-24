@@ -3,9 +3,11 @@ import toysRoutes from './toysRoutes.js';
 import schoolRoutes from './schoolRoutes.js';
 import stockRoutes from './stockRoutes.js';
 import vendorOrderRoutes from './vendorOrderRoutes.js';
+import authRoutes from './authRoutes.js';
 
 const router = express.Router();
 
+router.use('/auth',authRoutes);
 router.use('/toys', toysRoutes);
 router.use('/school', schoolRoutes);
 router.use('/stock', stockRoutes);

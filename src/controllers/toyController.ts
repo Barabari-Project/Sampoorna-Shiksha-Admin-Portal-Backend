@@ -4,6 +4,7 @@ import createHttpError from 'http-errors';
 import ToyModel from '../models/toyModel.js';
 import mongoose from 'mongoose';
 import { Level } from '../utils/types.js';
+import { checkMogooseId } from '../utils/validation.js';
 
 export const addToy = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy } = req.body;
@@ -26,9 +27,7 @@ export const addToy = expressAsyncHandler(async (req: Request, res: Response) =>
 export const updateToy = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy } = req.body;
     const toyId = toy.id;
-    if (!mongoose.Types.ObjectId.isValid(toyId)) {
-        throw createHttpError(400, 'Invalid Toy ID.');
-    }
+    checkMogooseId(toyId, 'toy');
     delete toy.id;
     delete toy._id;
     const updatedToy = await ToyModel.findByIdAndUpdate(toyId, toy, {

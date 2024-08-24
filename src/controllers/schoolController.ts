@@ -7,6 +7,7 @@ import createHttpError from 'http-errors';
 import { SchoolDataFromExcelSheet } from '../utils/types.js';
 import SchoolModel from '../models/schoolModel.js';
 import mongoose from 'mongoose';
+import { checkMogooseId } from '../utils/validation.js';
 dotenv.config();
 
 const RESPONSES_SHEET_ID: string = process.env.RESPONSES_SHEET_ID;
@@ -81,9 +82,7 @@ export const addSchoolData = expressAsyncHandler(async (req: Request, res: Respo
 export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Response) => {
     const { school } = req.body;
     const schoolId = school.id;
-    if (!mongoose.Types.ObjectId.isValid(schoolId)) {
-        throw createHttpError(400, 'Invalid Toy ID.');
-    }
+    checkMogooseId(schoolId,'school');
     delete school.id;
     const updatedSchool = await SchoolModel.findByIdAndUpdate(schoolId, school, {
         new: true, // Return the updated document
@@ -106,11 +105,11 @@ export const getSchools = expressAsyncHandler(async (req: Request, res: Response
     const filter: { [key: string]: any } = {};
 
     if (code) {
-        filter.brand = code;
+        filter.code = { $regex: code, $options: 'i' }; // Case-insensitive regex search for code
     }
 
     if (nameOfSchoolInstitution) {
-        filter.level = nameOfSchoolInstitution;
+        filter.nameOfSchoolInstitution = { $regex: nameOfSchoolInstitution, $options: 'i' }; // Case-insensitive regex search for nameOfSchoolInstitution
     }
 
     // Find schools that match the specified brand and level

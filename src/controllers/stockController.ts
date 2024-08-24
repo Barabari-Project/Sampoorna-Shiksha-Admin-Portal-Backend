@@ -3,13 +3,12 @@ import expressAsyncHandler from 'express-async-handler';
 import StockModel from '../models/stockModel.js';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
+import { checkMogooseId } from '../utils/validation.js';
 
 export const addNewStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy, quantity } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(toy)) {
-        throw createHttpError(400, 'Invalid Toy ID.');
-    }
+    checkMogooseId(toy, 'toy');
     const parsedQuantity = Number(quantity);
     if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
         throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
@@ -31,9 +30,7 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
 
     for (const item of toys) {
         const { toy, quantity } = item;
-        if (!mongoose.Types.ObjectId.isValid(toy)) {
-            throw createHttpError(400, 'Invalid Toy ID.');
-        }
+        checkMogooseId(toy, 'toy');
         const parsedQuantity = Number(quantity);
         if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
             throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
@@ -83,9 +80,8 @@ export const getStock = expressAsyncHandler(async (req: Request, res: Response) 
 
 export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(toy)) {
-        throw createHttpError(400, 'Invalid Toy ID.');
-    }
+
+    checkMogooseId(toy, 'toy');
     const deletedStockItem = await StockModel.findOneAndDelete({ toy });
 
     if (!deletedStockItem) {

@@ -115,7 +115,7 @@ export interface VendorCartItem {
     quantity: number;
     brand: string;
     subBrand: string;
-}
+};
 
 export enum Level {
     PRIMARY = 'PRIMARY',

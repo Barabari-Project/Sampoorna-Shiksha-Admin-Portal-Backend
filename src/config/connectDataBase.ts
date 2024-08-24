@@ -6,7 +6,8 @@ const connectDB = async () => {
         const conn = await connect(process.env.MONGO_URL, { dbName: process.env.DB });
         console.log(`MongoDB Connected : ${conn.connection.host}`);
     } catch (err) {
-        console.log(err);
+        console.log(err.message)
+        // console.log(err);
         process.exit(1);
     }
 }

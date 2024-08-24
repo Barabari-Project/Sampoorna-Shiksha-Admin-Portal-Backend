@@ -3,9 +3,20 @@ import expressAsyncHandler from 'express-async-handler';
 import VendorOrderModel from '../models/vendorOrderModel.js';
 import createHttpError from 'http-errors';
 import { IVendorOrder, VendorCartItem, VendorOrderStatus } from '../utils/types.js';
+import mongoose from 'mongoose';
+import { checkMogooseId } from '../utils/validation.js';
 
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
     const { cart }: { cart: VendorCartItem[] } = req.body;
+
+    cart.forEach((toy) => {
+        checkMogooseId(toy.toyId, 'toy');
+        const parsedQuantity = Number(toy.quantity);
+        if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+            throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+        }
+    });
+
     const orderList: IVendorOrder[] = [];
 
     cart.forEach((toy) => {
@@ -90,7 +101,7 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
     }
 
     if (status) {
-        filter.status = status;
+        filter['status.status'] = status;
     }
 
     const orders = await VendorOrderModel.find(filter);
@@ -101,7 +112,7 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
 
 export const getOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const order = await VendorOrderModel.findById(id);
+    const order = await VendorOrderModel.findById(id).populate('listOfToysSentLink.toy');;
     if (!order) {
         throw createHttpError(404, 'Order not found');
     }
@@ -110,7 +121,8 @@ export const getOrderById = expressAsyncHandler(async (req: Request, res: Respon
 
 export const deleteOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const deletedOrder = await VendorOrderModel.findByIdAndDelete({ id });
+    checkMogooseId(id, 'order');
+    const deletedOrder = await VendorOrderModel.findByIdAndDelete(id);
 
     if (!deletedOrder) {
         throw createHttpError(404, 'Order is not found.');

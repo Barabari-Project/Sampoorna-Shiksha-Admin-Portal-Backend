@@ -5,7 +5,6 @@ export const tokenGenerator = (payload: any) => {
     return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_EXPIRATION_TIME! });
 }
 
-
 export const verifyJwtToken = async (token: string) => {
     return jwt.verify(token, process.env.JWT_SECRET) as { [key: string]: any };
 }
