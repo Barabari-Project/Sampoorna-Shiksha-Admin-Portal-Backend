@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { IVendorOrder, VendorOrderStatus } from '../utils/types.js';
+import { IVendorOrder, VendorOrderStatus, VendorOrderType } from '../utils/types.js';
 import moment from 'moment-timezone';
 
 const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
@@ -14,10 +14,20 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
             }
         }
     ],
-    brand:{
-        type:String
+    brand: {
+        type: String
     },
     subBrand: {
+        type: String
+    },
+    address: {
+        type: String
+    },
+    type: {
+        type: String,
+        enum: VendorOrderType
+    },
+    description:{
         type: String
     },
     status: [

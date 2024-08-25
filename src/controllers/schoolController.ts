@@ -43,6 +43,9 @@ const readColumns = (row: any): SchoolDataFromExcelSheet => {
         isThereCupboardForSafekeeping: getValue('Is there a cupboard/place for safekeeping of the toys'),
         isThereRoomForLibrary: getValue('Is there a room /place to set up the library'),
         picturesOfLibraryRoomAndCupboard: getValue('Pictures of the library room and cupboard'),
+        numberofStudentsBalwadiClass1: getValue('Number of Students - Balwadi - class 1'),
+        numberofStudentsClass2Class4: getValue('Number of Students - class 2 - class 4'),
+        numberofStudentsclass5AndAbove: getValue('Number of Students - class 5 and above')
     };
     return data;
 };

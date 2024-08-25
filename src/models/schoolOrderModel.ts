@@ -3,24 +3,9 @@ import { ISchoolOrder } from '../utils/types.js';
 import moment from 'moment-timezone';
 
 const schoolOrderSchema: Schema<ISchoolOrder> = new Schema({
-    timestamp: {
-        type: String,
-    },
     school: {
         type: Schema.Types.ObjectId,
         ref: 'School',
-    },
-    numberOfStudentsBalwadiClass1: {
-        type: Number,
-    },
-    numberOfStudentsClass2To4: {
-        type: Number,
-    },
-    numberOfStudentsClass5AndAbove: {
-        type: Number,
-    },
-    referredBy: {
-        type: String,
     },
     listOfToysSentLink: [
         {
@@ -72,6 +57,6 @@ schoolOrderSchema.virtual('updatedAtIST').get(function () {
     return moment(this.updatedAt).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 });
 
-const OrderModel = mongoose.model<ISchoolOrder>('SchoolOrder', schoolOrderSchema);
+const SchoolOrderModel = mongoose.model<ISchoolOrder>('SchoolOrder', schoolOrderSchema);
 
-export default OrderModel;
+export default SchoolOrderModel;

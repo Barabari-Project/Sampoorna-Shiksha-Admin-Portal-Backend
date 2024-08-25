@@ -55,15 +55,17 @@ export interface SchoolDataFromExcelSheet {
     isThereCupboardForSafekeeping: string | undefined;
     isThereRoomForLibrary: string | undefined;
     picturesOfLibraryRoomAndCupboard: string | undefined;
+    numberofStudentsBalwadiClass1: string | undefined;
+    numberofStudentsClass2Class4: string | undefined;
+    numberofStudentsclass5AndAbove: string | undefined;
 }
 
-export interface SchoolOrderDataFromExcelSheet {
-    code: string;
-    timestamp: string;
-    numberOfStudentsBalwadiClass1: Number;
-    numberOfStudentsClass2To4: Number;
-    numberOfStudentsClass5AndAbove: Number;
-    referredBy: string;
+export interface SchoolOrder {
+    toyList: {
+        toy: Types.ObjectId;
+        quantity: number;
+    }[];
+    address?: string;
 };
 
 export interface ISchoolOrder extends Document {
@@ -100,6 +102,9 @@ export interface IVendorOrder {
     }[];
     brand?: string;
     subBrand?: string;
+    type?: VendorOrderType;
+    address?: string;
+    description?: string;
     status?: {
         timestamps: string;
         personName: string;
@@ -110,12 +115,22 @@ export interface IVendorOrder {
     updatedAt?: Date;
 };
 
+export enum VendorOrderType {
+    SCHOOL = 'SCHOOL',
+    NGO = 'NGO'
+};
+
 export interface VendorCartItem {
     toyId: Types.ObjectId;
     quantity: number;
     brand: string;
     subBrand: string;
 };
+
+export interface SchoolOrder {
+    toyId: Types.ObjectId;
+    quantity: number;
+}
 
 export enum Level {
     PRIMARY = 'PRIMARY',

@@ -2,12 +2,11 @@ import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import VendorOrderModel from '../models/vendorOrderModel.js';
 import createHttpError from 'http-errors';
-import { IVendorOrder, VendorCartItem, VendorOrderStatus } from '../utils/types.js';
-import mongoose from 'mongoose';
+import { IVendorOrder, VendorCartItem, VendorOrderStatus, VendorOrderType } from '../utils/types.js';
 import { checkMogooseId } from '../utils/validation.js';
 
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { cart }: { cart: VendorCartItem[] } = req.body;
+    const { cart, orderType, address }: { cart: VendorCartItem[], orderType: VendorOrderType, address: string } = req.body;
 
     cart.forEach((toy) => {
         checkMogooseId(toy.toyId, 'toy');
@@ -34,7 +33,9 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
                     toy: toy.toyId,
                     quantity: toy.quantity
                 }],
-                status: []
+                status: [],
+                type: orderType,
+                address: address
             });
         }
     });
@@ -55,8 +56,8 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
-        console.error((error as Error).message);
-        throw createHttpError(400, 'Failed to place order, please try again.');
+        console.error(error);
+        throw createHttpError(500, 'Internal Server Error. Please try again later.');
     }
 });
 
@@ -77,8 +78,8 @@ export const updateOrderById = expressAsyncHandler(async (req: Request, res: Res
 
         res.status(200).json({ message: 'Order updated successfully', order: updatedOrder });
     } catch (error) {
-        console.error((error as Error).message);
-        throw createHttpError(400, 'Failed to update order, please try again.');
+        console.error(error);
+        throw createHttpError(500, 'Internal Server Error. Please try again later.');
     }
 });
 

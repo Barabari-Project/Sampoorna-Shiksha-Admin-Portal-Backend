@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { tokenGenerator } from '../utils/token.js';
+import createHttpError from 'http-errors';
 
 export const signIn = expressAsyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -9,6 +10,6 @@ export const signIn = expressAsyncHandler(async (req: Request, res: Response) =>
         const token = tokenGenerator({ email });
         res.status(200).json({ token, message: 'Logged in successfully.' });
     } else {
-        res.status(401).json({ message: 'Invalid Credentials.' });
+        throw createHttpError(401, 'Invalid Credentials.');
     }
 });

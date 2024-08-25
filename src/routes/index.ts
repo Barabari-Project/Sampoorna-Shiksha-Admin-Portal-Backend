@@ -4,6 +4,7 @@ import schoolRoutes from './schoolRoutes.js';
 import stockRoutes from './stockRoutes.js';
 import vendorOrderRoutes from './vendorOrderRoutes.js';
 import authRoutes from './authRoutes.js';
+import schoolOrderRoutes from './schoolOrderRoutes.js';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use('/toys', toysRoutes);
 router.use('/school', schoolRoutes);
 router.use('/stock', stockRoutes);
 router.use('/vendor-order', vendorOrderRoutes);
+router.use('/school-order', schoolOrderRoutes);
 
 export default router;
