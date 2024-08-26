@@ -85,7 +85,7 @@ export const addSchoolData = expressAsyncHandler(async (req: Request, res: Respo
 export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Response) => {
     const { school } = req.body;
     const schoolId = school.id;
-    checkMogooseId(schoolId,'school');
+    checkMogooseId(schoolId, 'school');
     delete school.id;
     const updatedSchool = await SchoolModel.findByIdAndUpdate(schoolId, school, {
         new: true, // Return the updated document
@@ -102,7 +102,7 @@ export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Re
 });
 
 export const getSchools = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { code, nameOfSchoolInstitution } = req.query;
+    const { code, nameOfSchoolInstitution, sortByAsc } = req.query;
 
     // Create a filter object
     const filter: { [key: string]: any } = {};
@@ -116,7 +116,13 @@ export const getSchools = expressAsyncHandler(async (req: Request, res: Response
     }
 
     // Find schools that match the specified brand and level
-    const schools = await SchoolModel.find(filter);
+    let schools;
+
+    if (sortByAsc) {
+        schools = await SchoolModel.find(filter).sort({ timestamp: 1 });
+    } else {
+        schools = await SchoolModel.find(filter);
+    }
 
     // Send the filtered schools as a response
     res.status(200).json({ schools });
