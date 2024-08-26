@@ -35,6 +35,10 @@ export interface ISchool extends Document {
     isThereRoomForLibrary?: string;
     picturesOfLibraryRoomAndCupboard?: string;
     cupboardPictures?: string;
+    numberOfStudentsBalwadiClass1: string;
+    numberOfStudentsClass2To4: string;
+    numberOfStudentsClass5AndAbove: string;
+    referredBy: string;
     createdAt: Date;
     updatedAt: Date;
 }

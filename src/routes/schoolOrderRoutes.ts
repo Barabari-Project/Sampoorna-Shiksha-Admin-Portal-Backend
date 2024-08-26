@@ -1,6 +1,6 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { getOrderBySchoolId, placeOrderToSchool, updateOrder } from '../controllers/schoolOrderController.js';
+import { deleteOrderById, getOrderBySchoolId, placeOrderToSchool, updateOrder } from '../controllers/schoolOrderController.js';
 
 const router = express.Router();
 
@@ -17,6 +17,11 @@ router.get('/school/:schoolId',
 router.put('/',
     authMiddleware,
     updateOrder
+);
+
+router.delete('/:orderId',
+    authMiddleware,
+    deleteOrderById
 )
 
 export default router;

@@ -20,18 +20,23 @@ const schoolOrderSchema: Schema<ISchoolOrder> = new Schema({
     ],
     dateOfDispatch: {
         type: String,
+        default: 'Not Provided'
     },
     modeOfDispatch: {
         type: String,
+        default: 'Not Provided'
     },
     trackingDetails: {
         type: String,
+        default: 'Not Provided'
     },
     dateOfDelivery: {
         type: String,
+        default: 'Not Provided'
     },
     photosVideosLink: {
         type: String,
+        default: 'Not Provided'
     },
     createdAt: {
         type: Date,

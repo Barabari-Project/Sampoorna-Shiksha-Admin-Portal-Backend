@@ -71,6 +71,22 @@ const schoolSchema: Schema<ISchool> = new Schema({
         type: String,
         default: 'Not Provided'
     },
+    numberOfStudentsBalwadiClass1: {
+        type: String,
+        default: 'Not Provided'
+    },
+    numberOfStudentsClass2To4: {
+        type: String,
+        default: 'Not Provided'
+    },
+    numberOfStudentsClass5AndAbove: {
+        type: String,
+        default: 'Not Provided'
+    },
+    referredBy: {
+        type: String,
+        default: 'Not Provided'
+    },
     createdAt: {
         type: Date,
         select: false
