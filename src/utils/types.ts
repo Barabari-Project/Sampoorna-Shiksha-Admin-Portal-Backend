@@ -62,6 +62,7 @@ export interface SchoolDataFromExcelSheet {
     numberofStudentsBalwadiClass1: string | undefined;
     numberofStudentsClass2Class4: string | undefined;
     numberofStudentsclass5AndAbove: string | undefined;
+    referredBy: string | undefined;
 }
 
 export interface SchoolOrder {
