@@ -66,6 +66,9 @@ export const updateOrderById = expressAsyncHandler(async (req: Request, res: Res
     const { order } = req.body; // This contains the fields to be updated
 
     try {
+        delete order._id;
+        delete order.id;
+        delete order.__v;
         const updatedOrder = await VendorOrderModel.findByIdAndUpdate(
             id,
             { $set: order },

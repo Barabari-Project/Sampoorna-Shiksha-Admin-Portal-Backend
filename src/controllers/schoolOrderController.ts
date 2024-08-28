@@ -22,6 +22,7 @@ export const getOrderBySchoolId = expressAsyncHandler(async (req: Request, res: 
 
 export const deleteOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { orderId } = req.params;
+    console.log(orderId)
     checkMogooseId(orderId, 'Order');
     const order = await SchoolOrderModel.findByIdAndDelete(orderId);
 

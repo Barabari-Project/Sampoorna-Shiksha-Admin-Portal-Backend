@@ -76,10 +76,6 @@ export interface SchoolOrder {
 export interface ISchoolOrder extends Document {
     timestamp?: string;
     school?: Types.ObjectId;
-    numberOfStudentsBalwadiClass1?: number;
-    numberOfStudentsClass2To4?: number;
-    numberOfStudentsClass5AndAbove?: number;
-    referredBy?: string;
     listOfToysSentLink?: {
         toy: Types.ObjectId;
         quantity?: number;
