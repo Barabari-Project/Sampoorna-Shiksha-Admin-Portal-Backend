@@ -11,6 +11,9 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
             },
             quantity: {
                 type: Number,
+            },
+            price: {
+                type: Number
             }
         }
     ],
@@ -27,7 +30,7 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
         type: String,
         enum: VendorOrderType
     },
-    description:{
+    description: {
         type: String
     },
     status: [

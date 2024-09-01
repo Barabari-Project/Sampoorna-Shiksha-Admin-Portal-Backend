@@ -23,7 +23,8 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         if (existingOrder) {
             existingOrder.listOfToysSentLink.push({
                 toy: toy.toyId,
-                quantity: toy.quantity
+                quantity: toy.quantity,
+                price: toy.price
             });
         } else {
             orderList.push({
@@ -31,7 +32,8 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
                 subBrand: toy.subBrand,
                 listOfToysSentLink: [{
                     toy: toy.toyId,
-                    quantity: toy.quantity
+                    quantity: toy.quantity,
+                    price: toy.price
                 }],
                 status: [],
                 type: orderType,

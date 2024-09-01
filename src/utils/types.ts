@@ -100,6 +100,7 @@ export interface IVendorOrder {
     listOfToysSentLink?: {
         toy: Types.ObjectId;
         quantity?: number;
+        price: number;
     }[];
     brand?: string;
     subBrand?: string;
@@ -126,6 +127,7 @@ export interface VendorCartItem {
     quantity: number;
     brand: string;
     subBrand: string;
+    price: number;
 };
 
 export interface SchoolOrder {
