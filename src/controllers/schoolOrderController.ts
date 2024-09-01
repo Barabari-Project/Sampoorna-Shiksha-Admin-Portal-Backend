@@ -42,7 +42,7 @@ export const updateOrder = expressAsyncHandler(async (req: Request, res: Respons
     const updatedOrder = await SchoolOrderModel.findByIdAndUpdate(orderId, order, {
         new: true, // Return the updated document
         runValidators: true, // Run schema validators on the updated fields
-    });
+    }).populate('listOfToysSentLink.toy');
     if (!updateOrder) {
         throw createHttpError(404, 'Order not found.');
     }

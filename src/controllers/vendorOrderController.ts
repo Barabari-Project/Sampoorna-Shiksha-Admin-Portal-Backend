@@ -45,21 +45,21 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
     const session = await VendorOrderModel.startSession();
     session.startTransaction();
     try {
-        // Save all orders in parallel
-        const saveOperations = orderList.map(order =>
-            new VendorOrderModel(order).save({ session })
-        );
+        await session.withTransaction(async () => {
+            // Save all orders in parallel within the transaction
+            const saveOperations = orderList.map(order =>
+                new VendorOrderModel(order).save({ session })
+            );
 
-        await Promise.all(saveOperations);
+            await Promise.all(saveOperations);
 
-        await session.commitTransaction();
-        session.endSession();
-        res.status(201).json({ message: 'Order placed successfully' });
+            res.status(201).json({ message: 'Order placed successfully' });
+        });
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        console.error(error);
+        console.error('Error while saving order.', error);
         throw createHttpError(500, 'Internal Server Error. Please try again later.');
+    } finally {
+        session.endSession();
     }
 });
 
@@ -89,7 +89,7 @@ export const updateOrderById = expressAsyncHandler(async (req: Request, res: Res
 });
 
 export const getOrders = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { brand, subBrand, status } = req.query;
+    const { brand, status, type } = req.query;
     // Validate level
     if (status && !Object.values(VendorOrderStatus).includes(status as VendorOrderStatus)) {
         // If the level is invalid, return a 400 error
@@ -99,15 +99,19 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
     const filter: { [key: string]: any } = {};
 
     if (brand) {
-        filter.brand = brand;
+        filter.brand = { $regex: brand, $options: 'i' };
     }
 
-    if (subBrand) {
-        filter.subBrand = subBrand;
+    if (brand) {
+        filter.subBrand = { $regex: brand, $options: 'i' };
     }
 
     if (status) {
         filter['status.status'] = status;
+    }
+
+    if (type) {
+        filter['type'] = type;
     }
 
     const orders = await VendorOrderModel.find(filter);
