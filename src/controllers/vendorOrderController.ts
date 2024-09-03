@@ -114,7 +114,8 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
         filter['type'] = type;
     }
 
-    const orders = await VendorOrderModel.find(filter);
+    const orders = await VendorOrderModel.find(filter).populate('listOfToysSentLink.toy')
+    .exec();
 
     res.status(200).json(orders);
 
