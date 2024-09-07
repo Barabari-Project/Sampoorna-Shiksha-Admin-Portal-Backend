@@ -2,7 +2,7 @@ import moment from 'moment';
 import mongoose, { Document, Types } from 'mongoose';
 
 export interface IToyModel extends Document {
-    srNo: number;
+    // srNo: number;
     brand: string;
     subBrand: string;
     name: string;

@@ -2,20 +2,11 @@ import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import createHttpError from 'http-errors';
 import ToyModel from '../models/toyModel.js';
-import mongoose from 'mongoose';
 import { Level } from '../utils/types.js';
 import { checkMogooseId } from '../utils/validation.js';
 
 export const addToy = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy } = req.body;
-
-    // Check if a toy with the same srNo already exists
-    const existingToy = await ToyModel.findOne({ srNo: toy.srNo });
-
-    if (existingToy) {
-        // If a toy with the same srNo exists, send an error response
-        throw createHttpError(400, 'A toy with this serial number already exists.')
-    }
 
     // Create a new toy instance and save it
     const newToy = await (new ToyModel(toy)).save();
@@ -73,6 +64,8 @@ export const getToys = expressAsyncHandler(async (req: Request, res: Response) =
 
 export const getToyById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params; // Extract the toy ID from the request parameters
+
+    checkMogooseId(id,'Toy');
 
     // Find the toy by its ID
     const toy = await ToyModel.findById(id);

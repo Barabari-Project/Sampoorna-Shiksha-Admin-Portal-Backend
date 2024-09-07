@@ -42,24 +42,22 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         }
     });
 
-    const session = await VendorOrderModel.startSession();
-    session.startTransaction();
+    // const session = await VendorOrderModel.startSession();
+    // session.startTransaction();
     try {
-        await session.withTransaction(async () => {
-            // Save all orders in parallel within the transaction
-            const saveOperations = orderList.map(order =>
-                new VendorOrderModel(order).save({ session })
-            );
-
-            await Promise.all(saveOperations);
-
-            res.status(201).json({ message: 'Order placed successfully' });
-        });
+        const saveOperations = orderList.map(order =>
+            // new VendorOrderModel(order).save({ session })
+            new VendorOrderModel(order).save()
+        );
+        await Promise.all(saveOperations);
+        // await session.commitTransaction();
+        // session.endSession();
+        res.status(201).json({ message: 'Order placed successfully' });
     } catch (error) {
         console.error('Error while saving order.', error);
         throw createHttpError(500, 'Internal Server Error. Please try again later.');
     } finally {
-        session.endSession();
+        // session.endSession();
     }
 });
 
@@ -75,7 +73,7 @@ export const updateOrderById = expressAsyncHandler(async (req: Request, res: Res
             id,
             { $set: order },
             { new: true, runValidators: true } // Return the updated document and run validators
-        );
+        ).populate('listOfToysSentLink.toy');
 
         if (!updatedOrder) {
             throw createHttpError(404, 'Order not found');
@@ -115,7 +113,7 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
     }
 
     const orders = await VendorOrderModel.find(filter).populate('listOfToysSentLink.toy')
-    .exec();
+        .exec();
 
     res.status(200).json(orders);
 

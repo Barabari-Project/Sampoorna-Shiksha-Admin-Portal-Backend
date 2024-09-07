@@ -3,11 +3,11 @@ import { Level, IToyModel } from '../utils/types.js';
 import moment from 'moment-timezone';
 
 const toySchema: Schema<IToyModel> = new Schema({
-    srNo: {
-        type: Number,
-        required: true,
-        unique: true,
-    },
+    // srNo: {
+    //     type: Number,
+    //     required: true,
+    //     unique: true,
+    // },
     brand: {
         type: String,
     },
