@@ -7,7 +7,7 @@ import { checkMogooseId } from '../utils/validation.js';
 
 export const addToy = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy } = req.body;
-
+    console.log(toy)
     // Create a new toy instance and save it
     const newToy = await (new ToyModel(toy)).save();
 
@@ -65,7 +65,7 @@ export const getToys = expressAsyncHandler(async (req: Request, res: Response) =
 export const getToyById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params; // Extract the toy ID from the request parameters
 
-    checkMogooseId(id,'Toy');
+    checkMogooseId(id, 'Toy');
 
     // Find the toy by its ID
     const toy = await ToyModel.findById(id);

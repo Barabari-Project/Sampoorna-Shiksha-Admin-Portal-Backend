@@ -10,24 +10,31 @@ const toySchema: Schema<IToyModel> = new Schema({
     // },
     brand: {
         type: String,
+        default: 'Not Provided'
     },
     subBrand: {
         type: String,
+        default: 'Not Provided'
     },
     name: {
         type: String,
+        default: 'Not Provided'
     },
     price: {
         type: Number,
+        default: 0
     },
     category: {
         type: String,
+        default: 'Not Provided'
     },
     codeName: {
         type: String,
+        default: 'Not Provided'
     },
     cataloguePgNo: {
         type: Number,
+        default: 0
     },
     level: {
         type: String,
@@ -39,6 +46,7 @@ const toySchema: Schema<IToyModel> = new Schema({
     },
     link: {
         type: String,
+        default: 'Not Provided'
     },
     createdAt: {
         type: Date,
