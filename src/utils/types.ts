@@ -104,15 +104,18 @@ export interface IVendorOrder {
     }[];
     brand?: string;
     subBrand?: string;
-    type?: VendorOrderType;
+    to?:string;
+    from?:string;
     address?: string;
     description?: string;
     status?: {
-        timestamps: string;
-        personName: string;
-        contactNumber: string;
-        status: VendorOrderStatus;
+        timestamps?: string;
+        personName?: string;
+        contactNumber?: string;
+        status?: VendorOrderStatus;
     }[];
+    school?: Types.ObjectId | undefined;
+    photosVideosLink?: string;
     createdAt?: Date;
     updatedAt?: Date;
 };

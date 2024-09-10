@@ -18,17 +18,20 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
         }
     ],
     brand: {
-        type: String
+        type: String,
+        default: 'Not Provided'
     },
     subBrand: {
-        type: String
-    },
-    address: {
-        type: String
-    },
-    type: {
         type: String,
-        enum: VendorOrderType
+        default: 'Not Provided'
+    },
+    to: {
+        type: String,
+        default: 'Not Provided'
+    },
+    from: {
+        type: String,
+        default: 'Not Provided'
     },
     description: {
         type: String
@@ -37,12 +40,15 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
         {
             timestamps: {
                 type: String,
+                default: "Not Provided"
             },
             personName: {
                 type: String,
+                default: "Not Provided"
             },
             contactNumber: {
                 type: String,
+                default: "Not Provided"
             },
             status: {
                 type: String,
@@ -50,6 +56,15 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
             }
         }
     ],
+    school: {
+        type: Schema.Types.ObjectId,
+        ref: 'School',
+        required: false
+    },
+    photosVideosLink: {
+        type: String,
+        default: 'Not Provided'
+    },
     createdAt: {
         type: Date,
         select: false

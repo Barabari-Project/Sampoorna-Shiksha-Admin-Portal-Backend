@@ -2,27 +2,40 @@ import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import StockModel from '../models/stockModel.js';
 import createHttpError from 'http-errors';
-import mongoose from 'mongoose';
 import { checkMogooseId } from '../utils/validation.js';
 
 export const addNewStock = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { toy, quantity } = req.body;
+    const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
 
-    checkMogooseId(toy, 'toy');
-    const parsedQuantity = Number(quantity);
-    if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
-        throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+    for (const item of toys) {
+        const { toy, quantity } = item;
+        checkMogooseId(toy, 'toy');
+        const parsedQuantity = Number(quantity);
+        if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
+            throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+        }
     }
 
-    // Find the existing stock entry for the given toy
-    const updatedStock = await StockModel.findOneAndUpdate(
-        { toy },
-        { $inc: { quantity } }, // Increment the quantity if the entry exists
-        { new: true, upsert: true } // Return the new document and create it if it doesn't exist
-    );
+    try {
 
-    // Send the saved document as a response
-    res.status(201).json({ message: 'Stock added successfully!', stock: updatedStock });
+        const updateList = toys.map((item) => {
+            const { toy, quantity } = item;
+            return StockModel.findOneAndUpdate(
+                { toy: toy }, // Search condition
+                { $inc: { quantity } }, // Increment quantity
+                {
+                    new: true, // Return the updated document
+                    upsert: true // Create the document if it doesn't exist
+                }
+            );
+        });
+
+        await Promise.all(updateList);
+        res.status(200).json({ message: 'Stock successfully updated.' });
+    } catch (error) {
+        console.error(error.message);
+        throw createHttpError(400, 'Failed to add toys in stock', error.message);
+    }
 });
 
 export const removeFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -75,7 +88,7 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
 
 export const getStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const stock = await StockModel.find().populate('toy');
-    res.json(stock);
+    res.status(200).json(stock);
 });
 
 export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: Response) => {

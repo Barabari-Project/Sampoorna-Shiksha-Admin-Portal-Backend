@@ -4,9 +4,10 @@ import VendorOrderModel from '../models/vendorOrderModel.js';
 import createHttpError from 'http-errors';
 import { IVendorOrder, VendorCartItem, VendorOrderStatus, VendorOrderType } from '../utils/types.js';
 import { checkMogooseId } from '../utils/validation.js';
+import { Types } from 'mongoose';
 
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { cart, orderType, address }: { cart: VendorCartItem[], orderType: VendorOrderType, address: string } = req.body;
+    const { cart, from, to, schoolId }: { cart: VendorCartItem[], from: string, to: string, schoolId: Types.ObjectId | undefined } = req.body;
 
     cart.forEach((toy) => {
         checkMogooseId(toy.toyId, 'toy');
@@ -18,29 +19,51 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
 
     const orderList: IVendorOrder[] = [];
 
-    cart.forEach((toy) => {
-        const existingOrder = orderList.find(order => order.brand === toy.brand && order.subBrand === toy.subBrand);
-        if (existingOrder) {
-            existingOrder.listOfToysSentLink.push({
+    if (from != 'Vendor') {
+        checkMogooseId(schoolId, 'School');
+        orderList.push({
+            status: [{
+                status: VendorOrderStatus.PENDING
+            }],
+            school: schoolId,
+            from,
+            to
+        });
+        cart.forEach((toy) => {
+            orderList[0].listOfToysSentLink.push({
                 toy: toy.toyId,
                 quantity: toy.quantity,
                 price: toy.price
-            });
-        } else {
-            orderList.push({
-                brand: toy.brand,
-                subBrand: toy.subBrand,
-                listOfToysSentLink: [{
+            })
+        });
+    } else {
+        cart.forEach((toy) => {
+            const existingOrder = orderList.find(order => order.brand === toy.brand && order.subBrand === toy.subBrand);
+            if (existingOrder) {
+                existingOrder.listOfToysSentLink.push({
                     toy: toy.toyId,
                     quantity: toy.quantity,
                     price: toy.price
-                }],
-                status: [],
-                type: orderType,
-                address: address
-            });
-        }
-    });
+                });
+            } else {
+                orderList.push({
+                    brand: toy.brand,
+                    subBrand: toy.subBrand,
+                    listOfToysSentLink: [{
+                        toy: toy.toyId,
+                        quantity: toy.quantity,
+                        price: toy.price
+                    }],
+                    status: [{
+                        status: VendorOrderStatus.PENDING
+                    }],
+                    from,
+                    to,
+                    school: schoolId
+                });
+            }
+        });
+    }
 
     // const session = await VendorOrderModel.startSession();
     // session.startTransaction();
@@ -87,33 +110,35 @@ export const updateOrderById = expressAsyncHandler(async (req: Request, res: Res
 });
 
 export const getOrders = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { brand, status, type } = req.query;
+    // const { brand, status, from,to } = req.query;
     // Validate level
-    if (status && !Object.values(VendorOrderStatus).includes(status as VendorOrderStatus)) {
-        // If the level is invalid, return a 400 error
-        throw createHttpError(400, 'Invalid level parameter.');
-    }
-    // Create a filter object
-    const filter: { [key: string]: any } = {};
+    // if (status && !Object.values(VendorOrderStatus).includes(status as VendorOrderStatus)) {
+    //     // If the level is invalid, return a 400 error
+    //     throw createHttpError(400, 'Invalid level parameter.');
+    // }
+    // // Create a filter object
+    // const filter: { [key: string]: any } = {};
 
-    if (brand) {
-        filter.brand = { $regex: brand, $options: 'i' };
-    }
+    // if (brand) {
+    //     filter.brand = { $regex: brand, $options: 'i' };
+    // }
 
-    if (brand) {
-        filter.subBrand = { $regex: brand, $options: 'i' };
-    }
+    // if (brand) {
+    //     filter.subBrand = { $regex: brand, $options: 'i' };
+    // }
 
-    if (status) {
-        filter['status.status'] = status;
-    }
+    // if (status) {
+    //     filter['status.status'] = status;
+    // }
 
-    if (type) {
-        filter['type'] = type;
-    }
+    // if (from) {
+    //     filter['from'] = from;
+    // }
+    // if(to){
+    //     filter['to'] = to;
+    // }
 
-    const orders = await VendorOrderModel.find(filter).populate('listOfToysSentLink.toy')
-        .exec();
+    const orders = await VendorOrderModel.find().populate('listOfToysSentLink.toy').exec();
 
     res.status(200).json(orders);
 
