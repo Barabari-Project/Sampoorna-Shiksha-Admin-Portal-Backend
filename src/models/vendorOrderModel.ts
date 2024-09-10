@@ -56,6 +56,10 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
             }
         }
     ],
+    isToyAddedToTheStock:{
+        type: Boolean,
+        default: false
+    },
     school: {
         type: Schema.Types.ObjectId,
         ref: 'School',

@@ -104,8 +104,8 @@ export interface IVendorOrder {
     }[];
     brand?: string;
     subBrand?: string;
-    to?:string;
-    from?:string;
+    to?: string;
+    from?: string;
     address?: string;
     description?: string;
     status?: {
@@ -116,6 +116,7 @@ export interface IVendorOrder {
     }[];
     school?: Types.ObjectId | undefined;
     photosVideosLink?: string;
+    isToyAddedToTheStock?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 };

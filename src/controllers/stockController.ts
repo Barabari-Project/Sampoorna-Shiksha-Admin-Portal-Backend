@@ -88,7 +88,7 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
 
 export const getStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const stock = await StockModel.find().populate('toy');
-    res.status(200).json(stock);
+    res.status(200).json({ toys: stock });
 });
 
 export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -103,3 +103,20 @@ export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: 
 
     res.status(200).json({ message: 'Toy deleted successfully from stock.' });
 });
+
+/*
+    type1 =>
+        vendor to ngo
+        vendor to school
+            replace address field to id
+    type2 =>
+        ngo to school
+            
+    to   => 
+    from 
+
+    from available stock will send toy to the school
+
+
+    
+*/
