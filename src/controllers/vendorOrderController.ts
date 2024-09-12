@@ -5,6 +5,7 @@ import createHttpError from 'http-errors';
 import { IVendorOrder, VendorCartItem, VendorOrderStatus, VendorOrderType } from '../utils/types.js';
 import { checkMogooseId } from '../utils/validation.js';
 import { Types } from 'mongoose';
+import SchoolModel from '../models/schoolModel.js';
 
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
     const { cart, from, to, schoolId }: { cart: VendorCartItem[], from: string, to: string, schoolId: Types.ObjectId | undefined } = req.body;
@@ -19,9 +20,17 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
 
     const orderList: IVendorOrder[] = [];
 
-    if (from != 'Vendor') {
+    if (to == 'school') {
         checkMogooseId(schoolId, 'School');
+        const isSchoolExists = SchoolModel.exists({ _id: schoolId });
+        if (!isSchoolExists) {
+            throw createHttpError(400, 'School is not exists with give id');
+        }
+    }
+
+    if (from != 'vendor') {
         orderList.push({
+            listOfToysSentLink: [],
             status: [{
                 status: VendorOrderStatus.PENDING
             }],
@@ -138,7 +147,7 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
     //     filter['to'] = to;
     // }
 
-    const orders = await VendorOrderModel.find().populate('listOfToysSentLink.toy').exec();
+    const orders = await VendorOrderModel.find().populate('listOfToysSentLink.toy');
 
     res.status(200).json(orders);
 
@@ -146,7 +155,7 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
 
 export const getOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const order = await VendorOrderModel.findById(id).populate('listOfToysSentLink.toy');;
+    const order = await VendorOrderModel.findById(id).populate('listOfToysSentLink.toy');
     if (!order) {
         throw createHttpError(404, 'Order not found');
     }
