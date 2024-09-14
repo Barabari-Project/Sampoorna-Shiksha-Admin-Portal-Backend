@@ -103,6 +103,7 @@ export interface IVendorOrder {
         price: number;
     }[];
     brand?: string;
+    isPresentInStock?: boolean;
     subBrand?: string;
     to?: string;
     from?: string;

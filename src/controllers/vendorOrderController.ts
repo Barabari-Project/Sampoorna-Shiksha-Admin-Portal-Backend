@@ -155,12 +155,25 @@ export const getOrders = expressAsyncHandler(async (req: Request, res: Response)
 
 export const getOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    checkMogooseId(id, 'Order');
     const order = await VendorOrderModel.findById(id).populate('listOfToysSentLink.toy');
     if (!order) {
         throw createHttpError(404, 'Order not found');
     }
     res.status(200).json(order);
 });
+
+export const getOrdersBySchoolId = expressAsyncHandler(async (req: Request, res: Response) => {
+    const { schoolId } = req.params;
+    checkMogooseId(schoolId, "School");
+    try {
+        const vendorOrders = await VendorOrderModel.find({ school: schoolId }).populate('listOfToysSentLink.toy');
+        res.status(200).json(vendorOrders);
+    } catch (error) {
+        console.error('Error fetching vendor orders:', error);
+        res.status(500).json({ message: 'An error occurred while fetching vendor orders.' });
+    }
+})
 
 export const deleteOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;

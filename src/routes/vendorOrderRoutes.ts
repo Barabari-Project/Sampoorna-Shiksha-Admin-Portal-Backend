@@ -1,6 +1,6 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { deleteOrderById, getOrderById, getOrders, placeOrder, updateOrderById } from '../controllers/vendorOrderController.js';
+import { deleteOrderById, getOrderById, getOrders, getOrdersBySchoolId, placeOrder, updateOrderById } from '../controllers/vendorOrderController.js';
 
 const router = express.Router();
 
@@ -18,6 +18,11 @@ router.get('/',
     authMiddleware,
     getOrders
 );
+
+router.get('/school/:schoolId',
+    authMiddleware,
+    getOrdersBySchoolId
+)
 
 router.get('/:id',
     authMiddleware,

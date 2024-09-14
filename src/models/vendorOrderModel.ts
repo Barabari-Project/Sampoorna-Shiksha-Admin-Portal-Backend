@@ -58,7 +58,7 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
     ],
     isToyAddedToTheStock:{
         type: Boolean,
-        default: false
+        default: false,
     },
     school: {
         type: Schema.Types.ObjectId,
@@ -68,6 +68,10 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
     photosVideosLink: {
         type: String,
         default: 'Not Provided'
+    },
+    isPresentInStock :{
+        type: Boolean,
+        default: false
     },
     createdAt: {
         type: Date,
