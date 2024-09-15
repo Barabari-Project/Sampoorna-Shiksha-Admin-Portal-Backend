@@ -46,18 +46,12 @@ const readColumns = (row: any): SchoolDataFromExcelSheet => {
         numberofStudentsBalwadiClass1: getValue('Number of Students - Balwadi - class 1'),
         numberofStudentsClass2Class4: getValue('Number of Students - class 2 - class 4'),
         numberofStudentsclass5AndAbove: getValue('Number of Students - class 5 and above'),
-        referredBy : getValue('Referred by')
+        referredBy: getValue('Referred by')
     };
     return data;
 };
 
-const storeDataToTheDatabase = async (data: SchoolDataFromExcelSheet) => {
-    console.log(data);
-    const data1 = await (new SchoolModel(data)).save();
-    console.log(data1);
-};
-
-const readDataFromSheet = async () => {
+export const addSchoolData = expressAsyncHandler(async (req: Request, res: Response) => {
     const doc = new GoogleSpreadsheet(RESPONSES_SHEET_ID, serviceAccountAuth);
     await doc.loadInfo();
     let sheet = doc.sheetsByIndex[0];
@@ -70,24 +64,24 @@ const readDataFromSheet = async () => {
             const completed = row.get('Completed');
             if (!completed) {
                 const data: SchoolDataFromExcelSheet = readColumns(row);
-                await storeDataToTheDatabase(data);
+                await (new SchoolModel(data)).save();
                 row.set('Completed', 'True');
                 await row.save(); // think about this I want gurrented success over here
             }
         }
     }
-}
-
-export const addSchoolData = expressAsyncHandler(async (req: Request, res: Response) => {
-    await readDataFromSheet();
     res.sendStatus(200);
 });
 
 export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Response) => {
     const { school } = req.body;
     const schoolId = school.id;
-    checkMogooseId(schoolId, 'school');
+    checkMogooseId(schoolId, 'School');
     delete school.id;
+    delete school._id;
+    delete school.__v;
+    delete school.createdAt;
+    delete school.updatedAt;
     const updatedSchool = await SchoolModel.findByIdAndUpdate(schoolId, school, {
         new: true, // Return the updated document
         runValidators: true, // Run schema validators on the updated fields
@@ -132,6 +126,7 @@ export const getSchools = expressAsyncHandler(async (req: Request, res: Response
 export const getSchoolById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params; // Extract the school ID from the request parameters
 
+    checkMogooseId(id, 'School');
     // Find the school by its ID
     const school = await SchoolModel.findById(id);
 
@@ -147,6 +142,7 @@ export const getSchoolById = expressAsyncHandler(async (req: Request, res: Respo
 export const deleteSchoolById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params; // Extract the school ID from the request parameters
 
+    checkMogooseId(id, 'School');
     // Find the school by ID and delete it
     const deletedSchool = await SchoolModel.findByIdAndDelete(id);
 
