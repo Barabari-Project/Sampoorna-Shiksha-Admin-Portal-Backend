@@ -13,8 +13,11 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
     cart.forEach((toy) => {
         checkMogooseId(toy.toyId, 'toy');
         const parsedQuantity = Number(toy.quantity);
-        if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
-            throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+        const parsedPrice = Number(toy.price);
+        if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
+            throw createHttpError(400, 'Quantity must be a valid positive integer.');
+        } else if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+            throw createHttpError(400, 'Price must be a valid non-negative integer.');
         }
     });
 
@@ -26,6 +29,18 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         if (!isSchoolExists) {
             throw createHttpError(400, 'School is not exists with give id');
         }
+    } else {
+        // if to is not school then schoolId should not be there.
+        try {
+            checkMogooseId(schoolId, 'School');
+            throw createHttpError(400, 'School id is not required');
+        } catch (error) {
+
+        }
+    }
+
+    if (!(['vendor', 'ngo', 'school'].includes(from) && ['vendor', 'ngo', 'school'].includes(to))) {
+        throw createHttpError(400, 'Invalid from or to type');
     }
 
     if (from != 'vendor') {
@@ -96,10 +111,12 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
 export const updateOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { order } = req.body; // This contains the fields to be updated
-
+    checkMogooseId(id, 'Order');
     try {
         delete order._id;
         delete order.id;
+        delete order.createdAt;
+        delete order.updatedAt;
         delete order.__v;
         const updatedOrder = await VendorOrderModel.findByIdAndUpdate(
             id,
@@ -119,38 +136,8 @@ export const updateOrderById = expressAsyncHandler(async (req: Request, res: Res
 });
 
 export const getOrders = expressAsyncHandler(async (req: Request, res: Response) => {
-    // const { brand, status, from,to } = req.query;
-    // Validate level
-    // if (status && !Object.values(VendorOrderStatus).includes(status as VendorOrderStatus)) {
-    //     // If the level is invalid, return a 400 error
-    //     throw createHttpError(400, 'Invalid level parameter.');
-    // }
-    // // Create a filter object
-    // const filter: { [key: string]: any } = {};
-
-    // if (brand) {
-    //     filter.brand = { $regex: brand, $options: 'i' };
-    // }
-
-    // if (brand) {
-    //     filter.subBrand = { $regex: brand, $options: 'i' };
-    // }
-
-    // if (status) {
-    //     filter['status.status'] = status;
-    // }
-
-    // if (from) {
-    //     filter['from'] = from;
-    // }
-    // if(to){
-    //     filter['to'] = to;
-    // }
-
     const orders = await VendorOrderModel.find().populate('listOfToysSentLink.toy');
-
     res.status(200).json(orders);
-
 });
 
 export const getOrderById = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -167,10 +154,13 @@ export const getOrdersBySchoolId = expressAsyncHandler(async (req: Request, res:
     const { schoolId } = req.params;
     checkMogooseId(schoolId, "School");
     try {
+        const isSchoolExists = SchoolModel.exists({ _id: schoolId });
+        if (!isSchoolExists) {
+            throw createHttpError(400, 'School is not exists with give id');
+        }
         const vendorOrders = await VendorOrderModel.find({ school: schoolId }).populate('listOfToysSentLink.toy');
         res.status(200).json(vendorOrders);
     } catch (error) {
-        console.error('Error fetching vendor orders:', error);
         res.status(500).json({ message: 'An error occurred while fetching vendor orders.' });
     }
 })

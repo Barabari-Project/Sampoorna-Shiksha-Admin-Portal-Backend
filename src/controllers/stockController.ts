@@ -3,6 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import StockModel from '../models/stockModel.js';
 import createHttpError from 'http-errors';
 import { checkMogooseId } from '../utils/validation.js';
+import ToyModel from '../models/toyModel.js';
 
 export const addNewStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
@@ -13,6 +14,10 @@ export const addNewStock = expressAsyncHandler(async (req: Request, res: Respons
         const parsedQuantity = Number(quantity);
         if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
             throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+        }
+        const isToyExists = ToyModel.exists({ _id: toy });
+        if (!isToyExists) {
+            throw createHttpError(400, 'Toy is not exists with given id.');
         }
     }
 
@@ -47,6 +52,10 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
         const parsedQuantity = Number(quantity);
         if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
             throw createHttpError(400, 'Quantity must be a valid non-negative integer.');
+        }
+        const isToyExists = ToyModel.exists({ _id: toy });
+        if (!isToyExists) {
+            throw createHttpError(400, 'Toy is not exists with given id.');
         }
     }
     const session = await StockModel.startSession();
@@ -103,20 +112,3 @@ export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: 
 
     res.status(200).json({ message: 'Toy deleted successfully from stock.' });
 });
-
-/*
-    type1 =>
-        vendor to ngo
-        vendor to school
-            replace address field to id
-    type2 =>
-        ngo to school
-            
-    to   => 
-    from 
-
-    from available stock will send toy to the school
-
-
-    
-*/

@@ -34,7 +34,8 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
         default: 'Not Provided'
     },
     description: {
-        type: String
+        type: String,
+        default: 'Not Provided'
     },
     status: [
         {
@@ -56,10 +57,6 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
             }
         }
     ],
-    isToyAddedToTheStock:{
-        type: Boolean,
-        default: false,
-    },
     school: {
         type: Schema.Types.ObjectId,
         ref: 'School',
@@ -69,7 +66,7 @@ const vendorOrderSchema: Schema<IVendorOrder & Document> = new Schema({
         type: String,
         default: 'Not Provided'
     },
-    isPresentInStock :{
+    isAddedOrRemovedFromTheStock :{
         type: Boolean,
         default: false
     },

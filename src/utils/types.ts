@@ -102,7 +102,6 @@ export interface IVendorOrder {
         price: number;
     }[];
     brand?: string;
-    isPresentInStock?: boolean;
     subBrand?: string;
     to?: string;
     from?: string;
@@ -116,7 +115,7 @@ export interface IVendorOrder {
     }[];
     school?: Types.ObjectId | undefined;
     photosVideosLink?: string;
-    isToyAddedToTheStock?: boolean;
+    isAddedOrRemovedFromTheStock?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 };
