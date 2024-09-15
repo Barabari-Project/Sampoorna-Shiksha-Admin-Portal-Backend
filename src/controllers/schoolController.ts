@@ -70,7 +70,7 @@ export const addSchoolData = expressAsyncHandler(async (req: Request, res: Respo
             }
         }
     }
-    res.sendStatus(200);
+    res.status(200).json({ message: 'Schools are added successfully!' });
 });
 
 export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Response) => {

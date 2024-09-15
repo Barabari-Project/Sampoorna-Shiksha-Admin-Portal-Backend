@@ -95,6 +95,42 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
     }
 });
 
+export const checkAvailableStock = expressAsyncHandler(async (req: Request, res: Response) => {
+    const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
+
+    const insufficientStock = [];
+
+    // Iterate over each toy and its required quantity
+    for (const { toy, quantity } of toys) {
+        // Validate that the toyId is a valid ObjectId
+        checkMogooseId(toy, 'Toy');
+
+        // Find the stock for the given toy
+        const stock = await StockModel.findOne({ toy });
+
+        // Check if the toy exists in stock and if there is enough quantity
+        if (!stock || stock.quantity < quantity) {
+            insufficientStock.push({
+                toy,
+                message: !stock ? 'Toy not found in stock' : 'Insufficient stock',
+                availableQuantity: stock ? stock.quantity : 0,
+                requestedQuantity: quantity,
+            });
+        }
+    }
+
+    // If there are any items with insufficient stock, return them
+    if (insufficientStock.length > 0) {
+        res.status(400).json({
+            error: 'Insufficient stock for one or more items',
+            insufficientStock,
+        });
+    }
+
+    // If all items have sufficient stock
+    res.status(200).json({ message: 'Sufficient stock for all items' });
+});
+
 export const getStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const stock = await StockModel.find().populate('toy');
     res.status(200).json({ toys: stock });
