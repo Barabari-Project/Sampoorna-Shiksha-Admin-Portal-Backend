@@ -4,10 +4,11 @@ import StockModel from '../models/stockModel.js';
 import createHttpError from 'http-errors';
 import { checkMogooseId } from '../utils/validation.js';
 import ToyModel from '../models/toyModel.js';
+import VendorOrderModel from '../models/vendorOrderModel.js';
 
 export const addNewStock = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
-
+    const { toys, orderId } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
+    checkMogooseId(orderId, 'Order');
     for (const item of toys) {
         const { toy, quantity } = item;
         checkMogooseId(toy, 'toy');
@@ -20,7 +21,10 @@ export const addNewStock = expressAsyncHandler(async (req: Request, res: Respons
             throw createHttpError(400, 'Toy is not exists with given id.');
         }
     }
-
+    const isOrderExists = await VendorOrderModel.exists({ _id: orderId });
+    if (!isOrderExists) {
+        throw createHttpError(400, 'Order is not exists with given id.');
+    }
     try {
 
         const updateList = toys.map((item) => {
@@ -36,7 +40,12 @@ export const addNewStock = expressAsyncHandler(async (req: Request, res: Respons
         });
 
         await Promise.all(updateList);
-        res.status(200).json({ message: 'Stock successfully updated.' });
+        const updatedOrder = await VendorOrderModel.findByIdAndUpdate(
+            orderId,
+            { isAddedOrRemovedFromTheStock: true },
+            { new: true, runValidators: true } // Return the updated document
+        );
+        res.status(200).json({ message: 'Stock successfully updated.', order: updatedOrder });
     } catch (error) {
         console.error(error.message);
         throw createHttpError(400, 'Failed to add toys in stock', error.message);
@@ -96,22 +105,22 @@ export const removeFromStock = expressAsyncHandler(async (req: Request, res: Res
 });
 
 export const checkAvailableStock = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { toys } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
+    const { cart } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
 
     const insufficientStock = [];
 
     // Iterate over each toy and its required quantity
-    for (const { toy, quantity } of toys) {
+    for (const { toyId, quantity } of cart) {
         // Validate that the toyId is a valid ObjectId
-        checkMogooseId(toy, 'Toy');
+        checkMogooseId(toyId, 'Toy');
 
         // Find the stock for the given toy
-        const stock = await StockModel.findOne({ toy });
+        const stock = await StockModel.findOne({ toy: toyId });
 
         // Check if the toy exists in stock and if there is enough quantity
         if (!stock || stock.quantity < quantity) {
             insufficientStock.push({
-                toy,
+                toyId,
                 message: !stock ? 'Toy not found in stock' : 'Insufficient stock',
                 availableQuantity: stock ? stock.quantity : 0,
                 requestedQuantity: quantity,

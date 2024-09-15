@@ -9,6 +9,10 @@ import SchoolModel from '../models/schoolModel.js';
 
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
     const { cart, from, to, schoolId }: { cart: VendorCartItem[], from: string, to: string, schoolId: Types.ObjectId | undefined } = req.body;
+    console.log(from,to)
+    if (from == to) {
+        throw createHttpError(400, 'From and To cannot be same');
+    }
 
     cart.forEach((toy) => {
         checkMogooseId(toy.toyId, 'toy');
@@ -22,7 +26,6 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
     });
 
     const orderList: IVendorOrder[] = [];
-
     if (to == 'school') {
         checkMogooseId(schoolId, 'School');
         const isSchoolExists = SchoolModel.exists({ _id: schoolId });
@@ -30,12 +33,8 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
             throw createHttpError(400, 'School is not exists with give id');
         }
     } else {
-        // if to is not school then schoolId should not be there.
-        try {
-            checkMogooseId(schoolId, 'School');
+        if (schoolId) {
             throw createHttpError(400, 'School id is not required');
-        } catch (error) {
-
         }
     }
 
