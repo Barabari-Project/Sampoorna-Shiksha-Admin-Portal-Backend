@@ -7,7 +7,7 @@ import { checkMogooseId } from '../utils/validation.js';
 
 export const addToy = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toy } = req.body;
-    console.log(toy)
+
     // Create a new toy instance and save it
     const newToy = await (new ToyModel(toy)).save();
 
@@ -21,6 +21,8 @@ export const updateToy = expressAsyncHandler(async (req: Request, res: Response)
     checkMogooseId(toyId, 'toy');
     delete toy.id;
     delete toy._id;
+    delete toy.createdAt;
+    delete toy.updatedAt;
     const updatedToy = await ToyModel.findByIdAndUpdate(toyId, toy, {
         new: true, // Return the updated document
         runValidators: true, // Run schema validators on the updated fields
@@ -36,29 +38,7 @@ export const updateToy = expressAsyncHandler(async (req: Request, res: Response)
 });
 
 export const getToys = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { brand, level } = req.query; // Extract the brand and level from the query parameters
-
-    // Validate level
-    if (level && !Object.values(Level).includes(level as Level)) {
-        // If the level is invalid, return a 400 error
-        throw createHttpError(400, 'Invalid level parameter.');
-    }
-
-    // Create a filter object
-    const filter: { [key: string]: any } = {};
-
-    if (brand) {
-        filter.brand = brand;
-    }
-
-    if (level) {
-        filter.level = level;
-    }
-
-    // Find toys that match the specified brand and level
-    const toys = await ToyModel.find(filter);
-
-    // Send the filtered toys as a response
+    const toys = await ToyModel.find();
     res.status(200).json({ toys });
 });
 
@@ -82,6 +62,7 @@ export const getToyById = expressAsyncHandler(async (req: Request, res: Response
 export const deleteToyById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params; // Extract the toy ID from the request parameters
 
+    checkMogooseId(id, 'Toy');
     // Find the toy by ID and delete it
     const deletedToy = await ToyModel.findByIdAndDelete(id);
 

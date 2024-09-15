@@ -38,7 +38,7 @@ export const logger = winston.createLogger({
 app.use((req, res, next) => {
     // Log an info message for each incoming request
     logger.info(`Received a ${req.method} request for ${req.url}`);
-    logger.info(req.body);
+    logger.info(JSON.stringify(req.body));
     next();
 });
 
