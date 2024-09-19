@@ -6,6 +6,32 @@ import { checkMogooseId } from '../utils/validation.js';
 import ToyModel from '../models/toyModel.js';
 import VendorOrderModel from '../models/vendorOrderModel.js';
 
+export const assignStockQuantity = expressAsyncHandler(async (req: Request, res: Response) => {
+    const { toyId, quantity } = req.body;
+
+    const isToyExists = ToyModel.exists({ _id: toyId });
+    if (!isToyExists) {
+        throw createHttpError(400, 'Toy is not exists with given id.');
+    }
+    // Check if the stock entry for the given toy already exists
+    let stock = await StockModel.findOne({ toy: toyId });
+
+    if (stock) {
+        // If the stock entry exists, update the quantity
+        stock.quantity = quantity;
+        await stock.save();
+        res.status(200).json({ message: 'Stock updated', stock });
+    } else {
+        // If no stock entry exists, create a new one
+        stock = new StockModel({
+            toy: toyId,
+            quantity: quantity
+        });
+        await stock.save();
+        res.status(201).json({ message: 'Stock created', stock });
+    }
+});
+
 export const addNewStock = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toys, orderId } = req.body; // Expecting an array of { toy: ObjectId, quantity: number }
     checkMogooseId(orderId, 'Order');

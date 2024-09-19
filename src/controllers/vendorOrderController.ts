@@ -4,12 +4,31 @@ import VendorOrderModel from '../models/vendorOrderModel.js';
 import createHttpError from 'http-errors';
 import { IVendorOrder, VendorCartItem, VendorOrderStatus, VendorOrderType } from '../utils/types.js';
 import { checkMogooseId } from '../utils/validation.js';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 import { Types } from 'mongoose';
 import SchoolModel from '../models/schoolModel.js';
 
+const serviceAccountAuth = new JWT({
+    email: process.env.SHEET_EMAIL_ID,
+    key: process.env.GOOGLE_PRIVATE_KEY,
+    scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+    ],
+});
+
+export const writeDataToTheSheet = async (cart: VendorCartItem[], from: string, to: string, schoolName: string) => {
+
+    const doc = new GoogleSpreadsheet(process.env.ORDER_SHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+    let sheet = doc.sheetsByIndex[0];
+
+    await sheet.addRow({TimeStamp:'abc',Brand:'def','Sub Brand':'ghi','Toy Name':'jkl','Toy Code':'mno',Quantity:'pqr',From:'stu',To:'vwx','School Name':'yz'});
+}
+
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
     const { cart, from, to, schoolId }: { cart: VendorCartItem[], from: string, to: string, schoolId: Types.ObjectId | undefined } = req.body;
-    console.log(from,to)
+    console.log(from, to)
     if (from == to) {
         throw createHttpError(400, 'From and To cannot be same');
     }
@@ -98,6 +117,7 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         await Promise.all(saveOperations);
         // await session.commitTransaction();
         // session.endSession();
+        // writeDataToTheSheet();
         res.status(201).json({ message: 'Order placed successfully' });
     } catch (error) {
         console.error('Error while saving order.', error);

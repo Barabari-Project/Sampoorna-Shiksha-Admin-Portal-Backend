@@ -6,7 +6,6 @@ import { JWT } from 'google-auth-library';
 import createHttpError from 'http-errors';
 import { SchoolDataFromExcelSheet } from '../utils/types.js';
 import SchoolModel from '../models/schoolModel.js';
-import mongoose from 'mongoose';
 import { checkMogooseId } from '../utils/validation.js';
 dotenv.config();
 

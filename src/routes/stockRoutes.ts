@@ -1,6 +1,6 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { addNewStock, checkAvailableStock, deleteToyFromStock, getStock, removeFromStock } from '../controllers/stockController.js';
+import { addNewStock, assignStockQuantity, checkAvailableStock, deleteToyFromStock, getStock, removeFromStock } from '../controllers/stockController.js';
 
 const router = express.Router();
 
@@ -17,6 +17,11 @@ router.post('/remove',
 router.post('/check-available',
     authMiddleware,
     checkAvailableStock
+);
+
+router.post('/assign-quantity',
+    authMiddleware,
+    assignStockQuantity
 );
 
 router.get('/',
