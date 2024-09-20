@@ -10,6 +10,7 @@ import { Types } from 'mongoose';
 import SchoolModel from '../models/schoolModel.js';
 import moment from 'moment-timezone';
 import ToyModel from '../models/toyModel.js';
+import StockModel from '../models/stockModel.js';
 
 const serviceAccountAuth = new JWT({
     email: process.env.SHEET_EMAIL_ID,
@@ -34,9 +35,21 @@ export const writeDataToTheSheet = async (orderList: IVendorOrder[], from: strin
     });
 }
 
+export const removeQuantityAfterPlacingOrder = async (orderList: IVendorOrder[]) => {
+    for (let i = 0; i < orderList.length; i++) {
+        const order = orderList[i];
+        for (let j = 0; j < order.listOfToysSentLink.length; j++) {
+            const object = order.listOfToysSentLink[j];
+            const existingStock = await StockModel.findOne({ toy: object.toy })
+            existingStock.quantity -= object.quantity;
+            await existingStock.save();
+        }
+    }
+}
+
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
     const { cart, from, to, schoolId }: { cart: VendorCartItem[], from: string, to: string, schoolId: Types.ObjectId | undefined } = req.body;
-    console.log(from, to)
+
     if (from == to) {
         throw createHttpError(400, 'From and To cannot be same');
     }
@@ -129,6 +142,9 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
             new VendorOrderModel(order).save()
         );
         await Promise.all(saveOperations);
+        if (from == 'ngo' && to == 'school') {
+            await removeQuantityAfterPlacingOrder(orderList);
+        }
         // await session.commitTransaction();
         // session.endSession();
         await writeDataToTheSheet(orderList, from, to, schoolName);
