@@ -8,6 +8,8 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { Types } from 'mongoose';
 import SchoolModel from '../models/schoolModel.js';
+import moment from 'moment-timezone';
+import ToyModel from '../models/toyModel.js';
 
 const serviceAccountAuth = new JWT({
     email: process.env.SHEET_EMAIL_ID,
@@ -17,13 +19,19 @@ const serviceAccountAuth = new JWT({
     ],
 });
 
-export const writeDataToTheSheet = async (cart: VendorCartItem[], from: string, to: string, schoolName: string) => {
+export const writeDataToTheSheet = async (orderList: IVendorOrder[], from: string, to: string, schoolName: string) => {
 
     const doc = new GoogleSpreadsheet(process.env.ORDER_SHEET_ID, serviceAccountAuth);
     await doc.loadInfo();
     let sheet = doc.sheetsByIndex[0];
-
-    await sheet.addRow({TimeStamp:'abc',Brand:'def','Sub Brand':'ghi','Toy Name':'jkl','Toy Code':'mno',Quantity:'pqr',From:'stu',To:'vwx','School Name':'yz'});
+    const currentTimeIST = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+    console.log(orderList);
+    orderList.forEach((order) => {
+        order.listOfToysSentLink.forEach(async (object) => {
+            const data = await ToyModel.findById(object.toy);
+            await sheet.addRow({ TimeStamp: currentTimeIST, Brand: order.brand, 'Sub Brand': order.subBrand, 'Toy Name': data.name, 'Toy Code': data.codeName, Quantity: object.quantity, From: from, To: to, 'School Name': schoolName ?? 'Not Applicable' });
+        })
+    });
 }
 
 export const placeOrder = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -33,7 +41,7 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         throw createHttpError(400, 'From and To cannot be same');
     }
 
-    cart.forEach((toy) => {
+    cart.forEach(async (toy) => {
         checkMogooseId(toy.toyId, 'toy');
         const parsedQuantity = Number(toy.quantity);
         const parsedPrice = Number(toy.price);
@@ -42,14 +50,20 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         } else if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
             throw createHttpError(400, 'Price must be a valid non-negative integer.');
         }
+        const data = await ToyModel.findById(toy.toyId);
+        if (!data) {
+            throw createHttpError(404, 'Toy not found');
+        }
     });
-
+    let schoolName: string | null = null;
     const orderList: IVendorOrder[] = [];
     if (to == 'school') {
         checkMogooseId(schoolId, 'School');
-        const isSchoolExists = SchoolModel.exists({ _id: schoolId });
+        const isSchoolExists = await SchoolModel.findById(schoolId);
         if (!isSchoolExists) {
             throw createHttpError(400, 'School is not exists with give id');
+        } else {
+            schoolName = isSchoolExists.nameOfSchoolInstitution;
         }
     } else {
         if (schoolId) {
@@ -117,7 +131,7 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         await Promise.all(saveOperations);
         // await session.commitTransaction();
         // session.endSession();
-        // writeDataToTheSheet();
+        await writeDataToTheSheet(orderList, from, to, schoolName);
         res.status(201).json({ message: 'Order placed successfully' });
     } catch (error) {
         console.error('Error while saving order.', error);
