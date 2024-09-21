@@ -20,19 +20,18 @@ const serviceAccountAuth = new JWT({
     ],
 });
 
-export const writeDataToTheSheet = async (orderList: IVendorOrder[], from: string, to: string, schoolName: string) => {
+export const writeDataToTheSheet = async (cart: VendorCartItem[], from: string, to: string, schoolName: string) => {
 
     const doc = new GoogleSpreadsheet(process.env.ORDER_SHEET_ID, serviceAccountAuth);
     await doc.loadInfo();
     let sheet = doc.sheetsByIndex[0];
     const currentTimeIST = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
-    console.log(orderList);
-    orderList.forEach((order) => {
-        order.listOfToysSentLink.forEach(async (object) => {
-            const data = await ToyModel.findById(object.toy);
-            await sheet.addRow({ TimeStamp: currentTimeIST, Brand: order.brand, 'Sub Brand': order.subBrand, 'Toy Name': data.name, 'Toy Code': data.codeName, Quantity: object.quantity, From: from, To: to, 'School Name': schoolName ?? 'Not Applicable' });
-        })
-    });
+
+    for (let i = 0; i < cart.length; i++) {
+        const order = cart[i];
+        const data = await ToyModel.findById(order.toyId);
+        await sheet.addRow({ TimeStamp: currentTimeIST, Brand: order.brand, 'Sub Brand': order.subBrand, 'Toy Name': data.name, 'Toy Code': data.codeName, Quantity: order.quantity, From: from, To: to, 'School Name': schoolName ?? 'Not Applicable' });
+    }
 }
 
 export const removeQuantityAfterPlacingOrder = async (orderList: IVendorOrder[]) => {
@@ -147,7 +146,7 @@ export const placeOrder = expressAsyncHandler(async (req: Request, res: Response
         }
         // await session.commitTransaction();
         // session.endSession();
-        await writeDataToTheSheet(orderList, from, to, schoolName);
+        await writeDataToTheSheet(cart, from, to, schoolName);
         res.status(201).json({ message: 'Order placed successfully' });
     } catch (error) {
         console.error('Error while saving order.', error);

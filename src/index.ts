@@ -1,11 +1,10 @@
 // src/index.ts
-import express, { Request, Response, NextFunction } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import winston from "winston";
 import connectDB from './config/connectDataBase.js';
 import routes from './routes/index.js';
-import { writeDataToTheSheet } from './controllers/vendorOrderController.js';
 
 dotenv.config();
 
@@ -36,7 +35,7 @@ export const logger = winston.createLogger({
     ],
 });
 
-app.use((req, res, next) => {
+app.use((req:Request, res:Response, next:NextFunction) => {
     // Log an info message for each incoming request
     logger.info(`Received a ${req.method} request for ${req.url}`);
     logger.info(JSON.stringify(req.body));
@@ -50,7 +49,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 app.use('/api', routes);
 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req: Request, res: Response) => {
     logger.error(err);
     // if statusCode is there it means that message will also be created by me
     // if statusCode is not there it means that message is not created by me its something else in this situation we want to send internal server error.
