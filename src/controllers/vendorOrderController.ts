@@ -24,13 +24,17 @@ export const writeDataToTheSheet = async (cart: VendorCartItem[], from: string, 
 
     const doc = new GoogleSpreadsheet(process.env.ORDER_SHEET_ID, serviceAccountAuth);
     await doc.loadInfo();
-    let sheet = doc.sheetsByIndex[0];
+    let sheet = from == 'vendor' && to == 'school' ?
+        doc.sheetsByIndex[1] : from == 'ngo' && to == 'school' ? doc.sheetsByIndex[2] : doc.sheetsByIndex[0];
+
     const currentTimeIST = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 
     for (let i = 0; i < cart.length; i++) {
         const order = cart[i];
         const data = await ToyModel.findById(order.toyId);
-        await sheet.addRow({ TimeStamp: currentTimeIST, Brand: order.brand, 'Sub Brand': order.subBrand, 'Toy Name': data.name, 'Toy Code': data.codeName, Quantity: order.quantity, From: from, To: to, 'School Name': schoolName ?? 'Not Applicable' });
+        to == 'school' ?
+            await sheet.addRow({ TimeStamp: currentTimeIST, Brand: order.brand, 'Sub Brand': order.subBrand, 'Toy Name': data.name, 'Toy Code': data.codeName, Quantity: order.quantity, 'School Name': schoolName })
+            : await sheet.addRow({ TimeStamp: currentTimeIST, Brand: order.brand, 'Sub Brand': order.subBrand, 'Toy Name': data.name, 'Toy Code': data.codeName, Quantity: order.quantity });
     }
 }
 

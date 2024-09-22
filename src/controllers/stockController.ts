@@ -172,10 +172,10 @@ export const getStock = expressAsyncHandler(async (req: Request, res: Response) 
 });
 
 export const deleteToyFromStock = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { toy } = req.params;
-
-    checkMogooseId(toy, 'toy');
-    const deletedStockItem = await StockModel.findOneAndDelete({ toy });
+    const { id } = req.params;
+    console.log(id)
+    checkMogooseId(id, 'toy');
+    const deletedStockItem = await StockModel.findOneAndDelete({ toy: id });
 
     if (!deletedStockItem) {
         throw createHttpError(404, 'Toy not found in stock');

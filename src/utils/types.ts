@@ -153,3 +153,11 @@ export enum VendorOrderStatus {
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED'
 };
+
+export interface IOtherProduct {
+    order: Types.ObjectId;
+    item: string;
+    quantity: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
