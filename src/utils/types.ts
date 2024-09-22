@@ -157,7 +157,7 @@ export enum VendorOrderStatus {
 export interface IOtherProduct {
     order: Types.ObjectId;
     item: string;
-    quantity: string;
+    quantity: number;
     createdAt: Date;
     updatedAt: Date;
 }
