@@ -5,6 +5,7 @@ import createHttpError from 'http-errors';
 import { checkMogooseId } from '../utils/validation.js';
 import ToyModel from '../models/toyModel.js';
 import VendorOrderModel from '../models/vendorOrderModel.js';
+import { logger } from '../index.js';
 
 export const assignStockQuantity = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toyId, quantity } = req.body;
@@ -142,7 +143,7 @@ export const checkAvailableStock = expressAsyncHandler(async (req: Request, res:
 
         // Find the stock for the given toy
         const stock = await StockModel.findOne({ toy: toyId });
-
+    
         // Check if the toy exists in stock and if there is enough quantity
         if (!stock || stock.quantity < quantity) {
             insufficientStock.push({

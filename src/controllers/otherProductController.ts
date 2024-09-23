@@ -25,7 +25,9 @@ export const addOtherProductByOrderId = expressAsyncHandler(async (req: Request,
 
 export const deleteOtherProductsById = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    console.log(id);
     checkMogooseId(id, 'Item');
-    await OtherProductModel.findByIdAndDelete(id);
+    const resp = await OtherProductModel.findByIdAndDelete(id);
+    console.log(resp);
     res.status(200).json({ message: 'Item deleted successfully!' });
 });
