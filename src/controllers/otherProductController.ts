@@ -7,6 +7,7 @@ import VendorOrderModel from '../models/vendorOrderModel.js';
 
 export const getOtherProductsByOrderId = expressAsyncHandler(async (req: Request, res: Response) => {
     const { orderId } = req.params;
+    console.log(orderId);
     const otherProducts = await OtherProductModel.find({ order: orderId });
     res.status(200).json({ otherProducts });
 });
