@@ -12,8 +12,8 @@ const otherProductSchema: Schema<IOtherProduct> = new Schema({
         default: 'Not Provided'
     },
     quantity: {
-        type: String,
-        default: 'Not Provided'
+        type: Number,
+        default: 0
     },
     createdAt: {
         type: Date,
