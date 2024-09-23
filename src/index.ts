@@ -5,6 +5,7 @@ import cors from 'cors';
 import winston from "winston";
 import connectDB from './config/connectDataBase.js';
 import routes from './routes/index.js';
+import moment from "moment-timezone";
 
 dotenv.config();
 
@@ -23,7 +24,9 @@ export const logger = winston.createLogger({
     level: "info",
     // Use timestamp and printf to create a standard log format
     format: winston.format.combine(
-        winston.format.timestamp(),
+        winston.format.timestamp({
+            format: () => moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+        }),
         winston.format.printf(
             (data) => `${data.timestamp} ${data.level}: ${data.message}`
         )
