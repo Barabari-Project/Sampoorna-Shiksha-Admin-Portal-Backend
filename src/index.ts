@@ -7,6 +7,7 @@ import connectDB from './config/connectDataBase.js';
 import routes from './routes/index.js';
 import moment from "moment-timezone";
 import "winston-mongodb";
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -43,7 +44,9 @@ export const logger = winston.createLogger({
             collection: 'ss_logs', // The name of the collection where logs will be stored
             options: { useNewUrlParser: true, useUnifiedTopology: true },
             format: winston.format.combine(
-                winston.format.timestamp(),
+                winston.format.timestamp({
+                    format: () => moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+                }),
                 winston.format.json() // Store logs as JSON in MongoDB
             ),
         }),
@@ -51,15 +54,32 @@ export const logger = winston.createLogger({
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
+    const requestId = uuidv4();
     // Log an info message for each incoming request
     const requestBody = Object.keys(req.body).length ? JSON.stringify(req.body) : 'No body data';
-    
-    logger.info(`Incoming Request:
-    Method: ${req.method}
-    URL: ${req.url}
-    IP Address: ${req.ip}
-    Body: ${requestBody}`);
-    
+
+    logger.info(`[Request ID: ${requestId}] Incoming Request:
+        Method: ${req.method}
+        URL: ${req.url}
+        IP Address: ${req.ip}
+        Body: ${requestBody}`);
+
+    const originalSend = res.send;
+    let responseBody: any;
+
+    req.id = requestId;
+
+    res.send = function (body) {
+        responseBody = body;
+        return originalSend.apply(this, arguments);
+    };
+
+    res.on('finish', () => {
+        logger.info(`[Request ID: ${requestId}] Outgoing Response:
+        Status Code: ${res.statusCode}
+        Body: ${JSON.stringify(responseBody)}`);
+    });
+
     next();
 });
 
@@ -71,7 +91,7 @@ app.use('/api', routes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(
-        `Error occurred during ${req.method} request to ${req.url} | Status: ${err.statusCode || 500} | Message: ${err.message || "No error message"} | Stack: ${err.stack || "No stack trace"}`
+        `[Request ID: ${req.id}] Error occurred during ${req.method} request to ${req.url} | Status: ${err.statusCode || 500} | Message: ${err.message || "No error message"} | Stack: ${err.stack || "No stack trace"}`
     );
     // if statusCode is there it means that message will also be created by me
     // if statusCode is not there it means that message is not created by me its something else in this situation we want to send internal server error.
@@ -79,5 +99,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    logger.info(`Server is running on port ${PORT}`);
 });

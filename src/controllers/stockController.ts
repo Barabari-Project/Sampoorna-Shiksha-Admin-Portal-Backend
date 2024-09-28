@@ -5,7 +5,6 @@ import createHttpError from 'http-errors';
 import { checkMogooseId } from '../utils/validation.js';
 import ToyModel from '../models/toyModel.js';
 import VendorOrderModel from '../models/vendorOrderModel.js';
-import { logger } from '../index.js';
 
 export const assignStockQuantity = expressAsyncHandler(async (req: Request, res: Response) => {
     const { toyId, quantity } = req.body;
