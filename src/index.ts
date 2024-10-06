@@ -101,3 +101,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
 });
+
+export default app;
