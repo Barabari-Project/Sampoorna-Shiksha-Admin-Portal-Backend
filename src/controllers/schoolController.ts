@@ -13,7 +13,7 @@ const RESPONSES_SHEET_ID: string = process.env.RESPONSES_SHEET_ID;
 
 const serviceAccountAuth = new JWT({
     email: process.env.SHEET_EMAIL_ID,
-    key: process.env.GOOGLE_PRIVATE_KEY,
+    key: process.env.GOOGLE_PRIVATE_KEY.split(String.raw`\n`).join('\n'),
     scopes: [
         'https://www.googleapis.com/auth/spreadsheets',
     ],
