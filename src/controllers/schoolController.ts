@@ -26,7 +26,6 @@ const readColumns = (row: any): SchoolDataFromExcelSheet => {
     };
 
     const data: SchoolDataFromExcelSheet = {
-        code: getValue('Code'),
         timestamp: getValue('Timestamp'),
         nameOfSchoolInstitution: getValue('Name of the school/Institution'),
         boardAffiliatedAndMediumOfInstruction: getValue('Board affiliated to and Medium of instruction'),
@@ -96,14 +95,10 @@ export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Re
 });
 
 export const getSchools = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { code, nameOfSchoolInstitution, sortByAsc } = req.query;
+    const { nameOfSchoolInstitution, sortByAsc } = req.query;
 
     // Create a filter object
     const filter: { [key: string]: any } = {};
-
-    if (code) {
-        filter.code = { $regex: code, $options: 'i' }; // Case-insensitive regex search for code
-    }
 
     if (nameOfSchoolInstitution) {
         filter.nameOfSchoolInstitution = { $regex: nameOfSchoolInstitution, $options: 'i' }; // Case-insensitive regex search for nameOfSchoolInstitution
