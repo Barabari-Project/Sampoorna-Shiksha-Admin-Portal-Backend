@@ -17,7 +17,6 @@ export interface IToyModel extends Document {
 }
 
 export interface ISchool extends Document {
-    code: string;
     timestamp?: string;
     nameOfSchoolInstitution?: string;
     boardAffiliatedAndMediumOfInstruction?: string;
@@ -42,7 +41,6 @@ export interface ISchool extends Document {
     updatedAt: Date;
 }
 export interface SchoolDataFromExcelSheet {
-    code: string | undefined;
     timestamp: string | undefined;
     nameOfSchoolInstitution: string | undefined;
     boardAffiliatedAndMediumOfInstruction: string | undefined;

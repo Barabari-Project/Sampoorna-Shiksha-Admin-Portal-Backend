@@ -3,10 +3,6 @@ import { ISchool } from '../utils/types.js'; // Adjust the path as needed
 import moment from 'moment-timezone';
 
 const schoolSchema: Schema<ISchool> = new Schema({
-    code: {
-        type: String,
-        unique: true,
-    },
     timestamp: {
         type: String,
         default: 'Not Provided'
