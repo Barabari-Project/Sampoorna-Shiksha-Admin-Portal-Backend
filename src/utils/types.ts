@@ -42,7 +42,6 @@ export interface ISchool extends Document {
     updatedAt: Date;
 }
 export interface SchoolDataFromExcelSheet {
-    code: string | undefined;
     timestamp: string | undefined;
     nameOfSchoolInstitution: string | undefined;
     boardAffiliatedAndMediumOfInstruction: string | undefined;
