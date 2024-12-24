@@ -95,11 +95,10 @@ export const updateSchoolData = expressAsyncHandler(async (req: Request, res: Re
 });
 
 export const getSchools = expressAsyncHandler(async (req: Request, res: Response) => {
-    const {  nameOfSchoolInstitution, sortByAsc } = req.query;
+    const { nameOfSchoolInstitution, sortByAsc } = req.query;
 
     // Create a filter object
     const filter: { [key: string]: any } = {};
-
 
     if (nameOfSchoolInstitution) {
         filter.nameOfSchoolInstitution = { $regex: nameOfSchoolInstitution, $options: 'i' }; // Case-insensitive regex search for nameOfSchoolInstitution

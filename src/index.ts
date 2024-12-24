@@ -16,8 +16,9 @@ const PORT: number = parseInt(process.env.PORT || '3000');
 
 app.use(express.json());
 app.use(cors({
-    origin: true
+    origin: process.env.FRONTEND_BASE_URL,
 }));
+
 
 connectDB();
 
@@ -83,11 +84,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-app.get('/health', (req: Request, res: Response) => {
+app.get('/ss/health', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-app.use('/api', routes);
+app.use('/ss/api', routes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(
