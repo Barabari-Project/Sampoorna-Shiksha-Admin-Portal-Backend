@@ -14,11 +14,18 @@ dotenv.config();
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '3000');
 
-app.use(express.json());
-app.use(cors({
-    origin: process.env.FRONTEND_BASE_URL,
-}));
+var allowlist = [process.env.FRONTEND_BASE_URL1, process.env.FRONTEND_BASE_URL2]
 
+var corsOptionsDelegate = function (req, callback) {
+    var corsOptions: { origin: boolean } = { origin: false };
+    if (allowlist.indexOf(req.header('Origin')) !== -1) {
+        corsOptions = { origin: true }
+    }
+    callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+app.use(cors(corsOptionsDelegate));
+app.use(express.json());
 
 connectDB();
 
