@@ -24,9 +24,7 @@ var corsOptionsDelegate = function (req, callback) {
     callback(null, corsOptions) // callback expects two parameters: error and options
 }
 
-app.use(cors({
-  origin: '*'
-}));
+app.use(cors(corsOptionsDelegate));
 app.use(express.json());
 
 connectDB();
@@ -93,7 +91,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-app.get('/ss/health1', (req: Request, res: Response) => {
+app.get('/ss/health', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 

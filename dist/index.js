@@ -19,9 +19,7 @@ var corsOptionsDelegate = function (req, callback) {
     }
     callback(null, corsOptions); // callback expects two parameters: error and options
 };
-app.use(cors({
-    origin: '*'
-}));
+app.use(cors(corsOptionsDelegate));
 app.use(express.json());
 connectDB();
 export const logger = winston.createLogger({
@@ -71,7 +69,7 @@ app.use((req, res, next) => {
     });
     next();
 });
-app.get('/ss/health1', (req, res) => {
+app.get('/ss/health', (req, res) => {
     res.sendStatus(200);
 });
 app.use('/ss/api', routes);
