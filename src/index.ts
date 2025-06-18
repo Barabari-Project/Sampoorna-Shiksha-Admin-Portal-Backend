@@ -93,7 +93,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-app.get('/ss/health', (req: Request, res: Response) => {
+app.get('/ss/health1', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 

@@ -71,7 +71,7 @@ app.use((req, res, next) => {
     });
     next();
 });
-app.get('/ss/health', (req, res) => {
+app.get('/ss/health1', (req, res) => {
     res.sendStatus(200);
 });
 app.use('/ss/api', routes);
