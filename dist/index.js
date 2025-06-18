@@ -19,7 +19,9 @@ var corsOptionsDelegate = function (req, callback) {
     }
     callback(null, corsOptions); // callback expects two parameters: error and options
 };
-app.use(cors());
+app.use(cors({
+    origin: '*'
+}));
 app.use(express.json());
 connectDB();
 export const logger = winston.createLogger({
